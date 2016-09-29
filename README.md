@@ -28,7 +28,7 @@ const api = require('@superhero/request');
 
 api.get({url = 'example.com/foobar'}, (error, dto) => console.log(dto.status, dto.data));
 
-api.post({url = 'example.com/foobar', data: {foo:'bar',baz:'qux'}}, console.log);
+api.post({url = 'https://example.com/foobar', data: {foo:'bar',baz:'qux'}}, console.log);
 ```
 
 ## Options
