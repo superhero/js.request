@@ -1,0 +1,15 @@
+{
+  "name"        :  "@superhero/wrapper/http",
+  "version"     :  "0.0.1",
+  "description" :  "Wrapper for the http and https modules",
+  "repository"  :  "git@github.com:superhero/js.wrapper.http.git",
+  "main"        :  "lib/wrapper.js",
+  "license"     :  "WTFPL",
+  "keywords"    : ["wrapper","http","https"],
+  "author"      :
+  {
+    "name"  : "Erik Landvall",
+    "email" : "erik@landvall.se",
+    "url"   : "http://erik.landvall.se"
+  }
+}
