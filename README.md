@@ -1,14 +1,14 @@
-# Wrapper - http/https
+# Request
 
 Licence: [Do What The Fuck You Want To Public License (WTFPL)](http://www.wtfpl.net/about/).
 
 ---
 
-A wrapper for the http and https modules I set together to be able to simplify my api calls..
+A wrapper for the http and https modules request function. I put this together to be able to simplify my api requests..
 
 ## Install
 
-`npm install @superhero/wrapper/http`
+`npm install @superhero/request`
 
 ...or just set the dependency in your `package.json` file:
 
@@ -16,7 +16,7 @@ A wrapper for the http and https modules I set together to be able to simplify m
 {
   "dependencies":
   {
-    "@superhero/wrapper/http": "*"
+    "@superhero/request": "*"
   }
 }
 ```
@@ -24,7 +24,7 @@ A wrapper for the http and https modules I set together to be able to simplify m
 ## Example
 
 ```javascript
-const api = require('@superhero/wrapper/http');
+const api = require('@superhero/request');
 
 api.get({url = 'example.com/foobar'}, (error, dto) => console.log(dto.status, dto.data));
 
@@ -38,12 +38,12 @@ All options are optional.
 ```javascript
 {
   // the actual url, if no protocol is specified in the url, http is assumed
-  url     : '',
+  url: '',
 
   // an object map of the data to send with the request
-  data    : undefined,
+  data: undefined,
 
   // an object map of headers to send with the request
-  headers : {}
+  headers: {}
 }
 ```

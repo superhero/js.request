@@ -1,8 +1,8 @@
 {
-  "name"        :  "@superhero/wrapper/http",
+  "name"        :  "@superhero/request",
   "version"     :  "0.0.1",
-  "description" :  "Wrapper for the http and https modules",
-  "repository"  :  "git@github.com:superhero/js.wrapper.http.git",
+  "description" :  "Wrapper for the http and https modules request function",
+  "repository"  :  "git@github.com:superhero/js.request.git",
   "main"        :  "lib/wrapper.js",
   "license"     :  "WTFPL",
   "keywords"    : ["wrapper","http","https"],
