@@ -37,6 +37,9 @@ All options are optional.
 
 ```javascript
 {
+  // if true, some output for debugging is logged to the console
+  debug: false,
+
   // the actual url, if no protocol is specified in the url, http is assumed
   url: '',
 
