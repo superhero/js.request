@@ -4,6 +4,8 @@ Licence: [Do What The Fuck You Want To Public License (WTFPL)](http://www.wtfpl.
 
 ---
 
+[![npm version](https://badge.fury.io/js/%40superhero%2Frequest.svg)](https://badge.fury.io/js/%40superhero%2Frequest)
+
 A wrapper for the http and https modules request function. I put this together to be able to simplify my api requests..
 
 ## Install
