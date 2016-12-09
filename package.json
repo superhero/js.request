@@ -1,6 +1,6 @@
 {
   "name"        :  "@superhero/request",
-  "version"     :  "0.1.16",
+  "version"     :  "0.1.17",
   "description" :  "Wrapper for the http and https modules request function",
   "repository"  :  "git@github.com:superhero/js.request.git",
   "main"        :  "lib/wrapper.js",
