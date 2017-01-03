@@ -28,9 +28,9 @@ A wrapper for the http and https modules request function. I put this together t
 ```javascript
 const api = require('@superhero/request');
 
-api.get({url = 'example.com/foobar'}, (error, dto) => console.log(dto.status, dto.data));
+api.get({url:'example.com/foobar'}, (error, dto) => console.log(dto.status, dto.data));
 
-api.post({url = 'https://example.com/foobar', data: {foo:'bar',baz:'qux'}}, console.log);
+api.post({url:'https://example.com/foobar', data: {foo:'bar',baz:'qux'}}, console.log);
 ```
 
 ## Options
