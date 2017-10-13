@@ -49,6 +49,9 @@ All options are optional.
   data: undefined,
 
   // an object map of headers to send with the request
-  headers: {}
+  headers: {},
+
+  // timeout
+  timeout: 30
 }
 ```
