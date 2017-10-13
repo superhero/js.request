@@ -52,6 +52,6 @@ All options are optional.
   headers: {},
 
   // timeout
-  timeout: 30
+  timeout: 30e3
 }
 ```
