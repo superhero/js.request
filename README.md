@@ -26,23 +26,37 @@ A wrapper for the http and https modules request function. I put this together t
 ## Example
 
 ```javascript
-const api = require('@superhero/request');
+const
+Request = require('@superhero/request'),
+request = new Request();
 
-api.get({url:'example.com/foobar'}, (error, dto) => console.log(dto.status, dto.data));
-
-api.post({url:'https://example.com/foobar', data: {foo:'bar',baz:'qux'}}, console.log);
+request.post('example.com/foobar').then((result) => console.log(result.status, result.headers, result.data));
+request.post({url:'https://example.com/foobar', data: {foo:'bar',baz:'qux'}}).then(console.log);
 ```
 
 ## Options
 
-All options are optional.
+Options for the constructor.
 
 ```javascript
 {
   // if true, some output for debugging is logged to the console
   debug: false,
 
-  // the actual url, if no protocol is specified in the url, http is assumed
+  // this url will be used to resolve any provided url in the fetch call
+  url: '',
+
+  // timeout
+  timeout: 30e3
+}
+```
+
+Options for each request
+
+```javascript
+{
+  // the url to make the request to, relativ paths will be resolved against the
+  // provided url in the contructor
   url: '',
 
   // an object map of the data to send with the request
@@ -53,5 +67,4 @@ All options are optional.
 
   // timeout
   timeout: 30e3
-}
 ```
