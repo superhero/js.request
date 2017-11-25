@@ -46,6 +46,9 @@ Options for the constructor.
   // this url will be used to resolve any provided url in the fetch call
   url: '',
 
+  // headers that will be used in every request
+  headers: {},
+
   // timeout
   timeout: 30e3
 }
