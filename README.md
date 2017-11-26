@@ -68,6 +68,6 @@ Options for each request
   // an object map of headers to send with the request
   headers: {},
 
-  // timeout
-  timeout: 30e3
+  // timeout, inherit from setting in the constructor
+  timeout: ?
 ```

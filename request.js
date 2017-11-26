@@ -7,7 +7,13 @@ module.exports = class
 {
   constructor(config)
   {
-    this.config = config || {};
+    this.config = Object.assign(
+    {
+      debug   : false,
+      url     : '',
+      headers : {},
+      timeout : 30e3
+    }, config);
     this.debug  = new Debug({debug:!!config.debug});
   }
 
@@ -38,14 +44,21 @@ module.exports = class
       if(typeof options == 'string')
         options = {url:options};
 
+      options = Object.assign(
+      {
+        url     : '',
+        headers : {},
+        timeout : this.config.timeout
+      }, options);
+
       const
-      headers   = Object.assign(this.config || {}, options.headers || {}),
+      headers   = Object.assign(this.config.headers, options.headers),
       body      = typeof options.data || '' == 'string'
                 ? options.data
                 : (headers['Content-Type'] || '').startsWith('application/json')
                   ? JSON.stringify(options.data)
                   : querystring.stringify(options.data),
-      resolved  = url.resolve(this.config.url || '', options.url || ''),
+      resolved  = url.resolve(this.config.url, options.url),
       parsed    = url.parse(resolved, false, true),
       config    =
       {
@@ -53,7 +66,7 @@ module.exports = class
         host    : parsed.hostname,
         path    : parsed.path,
         port    : parsed.port || (parsed.protocol == 'https:' ? 443 : 80),
-        timeout : options.timeout || this.config.timeout || 30e3,
+        timeout : options.timeout,
         method  : method,
         headers : (() =>
                   {
