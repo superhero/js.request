@@ -42,7 +42,7 @@ module.exports = class
       headers   = Object.assign(this.config || {}, options.headers || {}),
       body      = typeof options.data || '' == 'string'
                 ? options.data
-                : headers['Content-Type'] == 'application/json'
+                : (headers['Content-Type'] || '').startsWith('application/json')
                   ? JSON.stringify(options.data)
                   : querystring.stringify(options.data),
       resolved  = url.resolve(this.config.url || '', options.url || ''),
