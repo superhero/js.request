@@ -14,7 +14,7 @@ module.exports = class
       headers : {},
       timeout : 30e3
     }, config);
-    this.debug  = new Debug({debug:!!config.debug});
+    this.debug  = new Debug({debug:!!this.config.debug});
   }
 
   get(...args)
