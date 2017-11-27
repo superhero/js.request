@@ -53,7 +53,7 @@ module.exports = class
 
       const
       headers   = Object.assign(this.config.headers, options.headers),
-      body      = typeof options.data || '' == 'string'
+      body      = typeof (options.data || '') == 'string'
                 ? options.data
                 : (headers['Content-Type'] || '').startsWith('application/json')
                   ? JSON.stringify(options.data)
