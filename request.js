@@ -14,7 +14,7 @@ module.exports = class
       headers : {},
       timeout : 30e3
     }, config);
-    this.debug  = new Debug({debug:!!this.config.debug});
+    this.debug = new Debug({debug:!!this.config.debug});
   }
 
   get(...args)
@@ -54,10 +54,10 @@ module.exports = class
       const
       headers   = Object.assign(this.config.headers, options.headers),
       body      = typeof (options.data || '') == 'string'
-                ? options.data
-                : (headers['Content-Type'] || '').startsWith('application/json')
-                  ? JSON.stringify(options.data)
-                  : querystring.stringify(options.data),
+                  ? options.data
+                  : ( headers['Content-Type'] || '' ).startsWith('application/json')
+                    ? JSON.stringify(options.data)
+                    : querystring.stringify(options.data),
       resolved  = url.resolve(this.config.url, options.url),
       parsed    = url.parse(resolved, false, true),
       config    =
