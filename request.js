@@ -70,7 +70,7 @@ module.exports = class
         method  : method,
         headers : (() =>
                   {
-                    headers['Content-Length'] = Buffer.byteLength(body, 'utf8');
+                    headers['Content-Length'] = Buffer.byteLength(body || '', 'utf8');
                     return headers;
                   })()
       },
