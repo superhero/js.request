@@ -40,6 +40,10 @@ Options for the constructor.
 
 ```javascript
 {
+  // if the requests should be cached or not. True for cache, false for not, or
+  // the name of the method to cache
+  cache: false,
+
   // if true, some output for debugging is logged to the console
   debug: false,
 
@@ -58,8 +62,12 @@ Options for each request
 
 ```javascript
 {
-  // the url to make the request to, relativ paths will be resolved against the
-  // provided url in the contructor
+  // if the requests should be cached or not, default value inherit from
+  // settings in the constructor
+  cache: ?,
+
+  // the url to make the request to, relative paths will be resolved against
+  // the provided url in the constructor
   url: '',
 
   // an object map of the data to send with the request
@@ -70,4 +78,5 @@ Options for each request
 
   // timeout, inherit from setting in the constructor
   timeout: ?
+}
 ```

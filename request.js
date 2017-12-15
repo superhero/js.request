@@ -9,10 +9,11 @@ module.exports = class
   {
     this.config = Object.assign(
     {
+      cache   : false,
       debug   : false,
-      url     : '',
       headers : {},
-      timeout : 30e3
+      timeout : 30e3,
+      url     : ''
     }, config);
     this.debug = new Debug({debug:!!this.config.debug});
   }
@@ -46,9 +47,10 @@ module.exports = class
 
       options = Object.assign(
       {
-        url     : '',
+        cache   : this.config.cache,
         headers : {},
-        timeout : this.config.timeout
+        timeout : this.config.timeout,
+        url     : ''
       }, options);
 
       const
@@ -87,7 +89,7 @@ module.exports = class
           {
             data = JSON.parse(data);
           }
-          catch (e) {/*tried and failed to parse content as json*/}
+          catch (e) { /* tried and failed to parse content as json */ }
 
           this.debug.log('status:',  result.statusCode);
           this.debug.log('headers:', result.headers);
