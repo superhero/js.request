@@ -1,7 +1,7 @@
 const
 Debug       = require('@superhero/debug'),
 url         = require('url'),
-querystring = require('querystring');
+querystring = require('querystring')
 
 module.exports = class
 {
@@ -9,33 +9,32 @@ module.exports = class
   {
     this.config = Object.assign(
     {
-      cache   : false,
       debug   : false,
       headers : {},
       timeout : 30e3,
       url     : ''
-    }, config);
-    this.debug = new Debug({debug:!!this.config.debug});
+    }, config)
+    this.debug = new Debug({debug:!!this.config.debug})
   }
 
   get(...args)
   {
-    return this.fetch('GET', ...args);
+    return this.fetch('GET', ...args)
   }
 
   put(...args)
   {
-    return this.fetch('PUT', ...args);
+    return this.fetch('PUT', ...args)
   }
 
   post(...args)
   {
-    return this.fetch('POST', ...args);
+    return this.fetch('POST', ...args)
   }
 
   delete(...args)
   {
-    return this.fetch('DELETE', ...args);
+    return this.fetch('DELETE', ...args)
   }
 
   fetch(method, options)
@@ -43,15 +42,14 @@ module.exports = class
     return new Promise((fulfill, reject) =>
     {
       if(typeof options == 'string')
-        options = {url:options};
+        options = { url:options }
 
       options = Object.assign(
       {
-        cache   : this.config.cache,
         headers : {},
         timeout : this.config.timeout,
         url     : ''
-      }, options);
+      }, options)
 
       const
       headers   = Object.assign(this.config.headers, options.headers),
@@ -73,44 +71,44 @@ module.exports = class
         headers : (() =>
                   {
                     headers['Content-Length'] = Buffer.byteLength(body || '', 'utf8');
-                    return headers;
+                    return headers
                   })()
       },
       request = ( parsed.protocol == 'https:'
                 ? require('https')
                 : require('http')).request(config, (result) =>
       {
-        let data = '';
+        let data = ''
 
-        result.on('data', chunk => data += chunk);
-        result.on('end',  ()    =>
+        result.on('data', (chunk) => data += chunk)
+        result.on('end',  ()      =>
         {
           try
           {
-            data = JSON.parse(data);
+            data = JSON.parse(data)
           }
           catch (e) { /* tried and failed to parse content as json */ }
 
-          this.debug.log('status:',  result.statusCode);
-          this.debug.log('headers:', result.headers);
-          this.debug.log('data:',    data);
+          this.debug.log('status:',  result.statusCode)
+          this.debug.log('headers:', result.headers)
+          this.debug.log('data:',    data)
 
           fulfill(
           {
             status  : result.statusCode,
             headers : result.headers,
             data    : data
-          });
-        });
-      });
+          })
+        })
+      })
 
-      this.debug.log('options:', config);
+      this.debug.log('options:', config)
 
       // writing body, if one is declared
-      body && request.write(body);
+      body && request.write(body)
 
-      request.on('error', reject);
-      request.end();
-    });
+      request.on('error', reject)
+      request.end()
+    })
   }
 }
