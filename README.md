@@ -69,6 +69,8 @@ Options for each request
   headers: {},
 
   // timeout, inherit from setting in the constructor
-  timeout: ?
+  timeout: ?,
+
+  pipe: Writable // https://nodejs.org/api/stream.html#stream_writable_streams
 }
 ```

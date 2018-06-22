@@ -80,6 +80,9 @@ module.exports = class
       {
         let data = ''
 
+        if(options.pipe)
+          result.pipe(options.pipe)
+
         result.on('data', (chunk) => data += chunk)
         result.on('end',  ()      =>
         {
