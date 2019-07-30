@@ -42,7 +42,9 @@ module.exports = class
     return new Promise((fulfill, reject) =>
     {
       if(typeof options == 'string')
+      {
         options = { url:options }
+      }
 
       options = Object.assign(
       {
@@ -52,15 +54,17 @@ module.exports = class
       }, options)
 
       const
-      headers   = Object.assign(this.config.headers, options.headers),
-      body      = typeof (options.data || '') == 'string'
-                  ? options.data
-                  : ( headers['Content-Type'] || '' ).startsWith('application/json')
-                    ? JSON.stringify(options.data)
-                    : querystring.stringify(options.data),
-      resolved  = url.resolve(this.config.url, options.url),
-      parsed    = url.parse(resolved, false, true),
-      config    =
+      assigned    = Object.assign({}, this.config.headers, options.headers),
+      objectKeys  = Object.keys(assigned),
+      headers     = objectKeys.reduce((c, k) => (c[k.toLowerCase()] = assigned[k], c), {}),
+      body        = typeof (options.data || '') == 'string'
+                    ? options.data
+                    : ( headers['content-type'] || '' ).startsWith('application/json')
+                      ? JSON.stringify(options.data)
+                      : querystring.stringify(options.data),
+      resolved    = url.resolve(this.config.url, options.url),
+      parsed      = url.parse(resolved, false, true),
+      config      =
       {
         auth    : parsed.auth,
         host    : parsed.hostname,
@@ -70,7 +74,7 @@ module.exports = class
         method  : method,
         headers : (() =>
                   {
-                    headers['Content-Length'] = Buffer.byteLength(body || '', 'utf8');
+                    headers['content-length'] = Buffer.byteLength(body || '', 'utf8');
                     return headers
                   })()
       },
@@ -81,7 +85,9 @@ module.exports = class
         let data = ''
 
         if(options.pipe)
+        {
           result.pipe(options.pipe)
+        }
 
         result.on('data', (chunk) => data += chunk)
         result.on('end',  ()      =>

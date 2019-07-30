@@ -79,4 +79,15 @@ describe('request tests', async () =>
     expect(response.status).to.be.equal(200)
     expect(response.data.data).to.be.equal('foo=bar')
   })
+
+  it('simple GET http request', async () =>
+  {
+    const
+    url       = 'http://httpbin.org/get?foo=bar',
+    headers   = { 'content-type':'json/application' },
+    response  = await request.get({ url, headers })
+
+    expect(response.status).to.be.equal(200)
+    expect(response.data.args.foo).to.be.equal('bar')
+  })
 })
