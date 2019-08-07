@@ -62,8 +62,8 @@ module.exports = class
                     : ( headers['content-type'] || '' ).startsWith('application/json')
                       ? JSON.stringify(options.data)
                       : querystring.stringify(options.data),
-      resolved    = url.resolve(this.config.url, options.url),
-      parsed      = url.parse(resolved, false, true),
+      composed    = this.config.url + options.url,
+      parsed      = url.parse(composed, false, true),
       config      =
       {
         auth    : parsed.auth,
