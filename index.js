@@ -104,6 +104,7 @@ module.exports = class
 
           fulfill(
           {
+            url     : composed,
             status  : result.statusCode,
             headers : result.headers,
             data    : data
