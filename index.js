@@ -9,10 +9,11 @@ module.exports = class
   {
     this.config = Object.assign(
     {
-      debug   : false,
-      headers : {},
-      timeout : 30e3,
-      url     : ''
+      rejectUnauthorized: true,
+      debug             : false,
+      headers           : {},
+      timeout           : 30e3,
+      url               : ''
     }, config)
     this.debug = new Debug({debug:!!this.config.debug})
   }
@@ -62,17 +63,18 @@ module.exports = class
       parsed    = url.parse(resolved, false, true),
       config    =
       {
-        auth    : parsed.auth,
-        host    : parsed.hostname,
-        path    : parsed.path,
-        port    : parsed.port || (parsed.protocol == 'https:' ? 443 : 80),
-        timeout : options.timeout,
-        method  : method,
-        headers : (() =>
-                  {
-                    headers['Content-Length'] = Buffer.byteLength(body || '', 'utf8');
-                    return headers
-                  })()
+        rejectUnauthorized: options.rejectUnauthorized,
+        auth              : parsed.auth,
+        host              : parsed.hostname,
+        path              : parsed.path,
+        port              : parsed.port || (parsed.protocol == 'https:' ? 443 : 80),
+        timeout           : options.timeout,
+        method            : method,
+        headers           : (() =>
+                            {
+                              headers['Content-Length'] = Buffer.byteLength(body || '', 'utf8');
+                              return headers
+                            })()
       },
       request = ( parsed.protocol == 'https:'
                 ? require('https')

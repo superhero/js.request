@@ -50,7 +50,10 @@ Options for the constructor.
   headers: {},
 
   // timeout
-  timeout: 30e3
+  timeout: 30e3,
+
+  // specifies if you want the ssl unauthorization to be rejected or not
+  rejectUnauthorized: true
 }
 ```
 
@@ -71,6 +74,7 @@ Options for each request
   // timeout, inherit from setting in the constructor
   timeout: ?,
 
-  pipe: Writable // https://nodejs.org/api/stream.html#stream_writable_streams
+  // https://nodejs.org/api/stream.html#stream_writable_streams
+  pipe: Writable
 }
 ```
