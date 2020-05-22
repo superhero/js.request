@@ -43,7 +43,9 @@ module.exports = class
     return new Promise((fulfill, reject) =>
     {
       if(typeof options == 'string')
+      {
         options = { url:options }
+      }
 
       options = Object.assign(
       {
@@ -53,15 +55,17 @@ module.exports = class
       }, options)
 
       const
-      headers   = Object.assign(this.config.headers, options.headers),
-      body      = typeof (options.data || '') == 'string'
-                  ? options.data
-                  : ( headers['Content-Type'] || '' ).startsWith('application/json')
-                    ? JSON.stringify(options.data)
-                    : querystring.stringify(options.data),
-      resolved  = url.resolve(this.config.url, options.url),
-      parsed    = url.parse(resolved, false, true),
-      config    =
+      assigned    = Object.assign({}, this.config.headers, options.headers),
+      objectKeys  = Object.keys(assigned),
+      headers     = objectKeys.reduce((c, k) => (c[k.toLowerCase()] = assigned[k], c), {}),
+      body        = typeof (options.data || '') == 'string'
+                    ? options.data
+                    : ( headers['content-type'] || '' ).startsWith('application/json')
+                      ? JSON.stringify(options.data)
+                      : querystring.stringify(options.data),
+      composed    = this.config.url + options.url,
+      parsed      = url.parse(composed, false, true),
+      config      =
       {
         rejectUnauthorized: options.rejectUnauthorized,
         auth              : parsed.auth,
@@ -83,7 +87,9 @@ module.exports = class
         let data = ''
 
         if(options.pipe)
+        {
           result.pipe(options.pipe)
+        }
 
         result.on('data', (chunk) => data += chunk)
         result.on('end',  ()      =>
@@ -100,6 +106,7 @@ module.exports = class
 
           fulfill(
           {
+            url     : composed,
             status  : result.statusCode,
             headers : result.headers,
             data    : data
