@@ -5,17 +5,10 @@
     "passes": 9,
     "pending": 0,
     "failures": 0,
-<<<<<<< HEAD
-    "start": "2020-05-22T14:22:55.843Z",
-    "end": "2020-05-22T14:22:57.893Z",
-    "duration": 2050,
-    "testsRegistered": 8,
-=======
-    "start": "2019-08-07T08:09:02.911Z",
-    "end": "2019-08-07T08:09:05.668Z",
-    "duration": 2757,
+    "start": "2020-05-22T14:30:38.339Z",
+    "end": "2020-05-22T14:30:40.576Z",
+    "duration": 2237,
     "testsRegistered": 9,
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
     "passPercent": 100,
     "pendingPercent": 0,
     "other": 0,
@@ -26,11 +19,7 @@
     "pendingPercentClass": "danger"
   },
   "suites": {
-<<<<<<< HEAD
-    "uuid": "d5592ec1-6afd-47ef-b541-82893086bf72",
-=======
-    "uuid": "e064d2e5-7bf0-47ef-bb03-bc19460660af",
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+    "uuid": "465fe330-bde9-47f2-9fb6-237a712d949f",
     "title": "",
     "fullFile": "",
     "file": "",
@@ -39,11 +28,7 @@
     "tests": [],
     "suites": [
       {
-<<<<<<< HEAD
-        "uuid": "bd95ba37-e969-4aad-a737-b933f68ab25c",
-=======
-        "uuid": "b0e829ae-715a-490a-a29d-b3381d3d0806",
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+        "uuid": "5982a070-67b2-4356-981e-366d75495c1e",
         "title": "request tests",
         "fullFile": "/home/superhero/Projects/js.request/test.js",
         "file": "/test.js",
@@ -54,11 +39,7 @@
             "title": "simple GET http request",
             "fullTitle": "request tests simple GET http request",
             "timedOut": false,
-<<<<<<< HEAD
-            "duration": 220,
-=======
-            "duration": 239,
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "duration": 215,
             "state": "passed",
             "speed": "slow",
             "pass": true,
@@ -67,11 +48,7 @@
             "code": "const response = await request.get('http://httpbin.org/get?foo=bar')\nexpect(response.status).to.be.equal(200)\nexpect(response.data.args.foo).to.be.equal('bar')",
             "err": {},
             "isRoot": false,
-<<<<<<< HEAD
-            "uuid": "653727b0-64c0-4a14-8998-930645d882a0",
-=======
-            "uuid": "6f546ada-4065-4f20-82ca-5fe1b35b3322",
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "uuid": "4926567a-33ca-438b-947c-c9bbb57a9627",
             "isHook": false,
             "skipped": false
           },
@@ -79,11 +56,7 @@
             "title": "simple GET https request",
             "fullTitle": "request tests simple GET https request",
             "timedOut": false,
-<<<<<<< HEAD
-            "duration": 393,
-=======
-            "duration": 485,
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "duration": 391,
             "state": "passed",
             "speed": "slow",
             "pass": true,
@@ -92,11 +65,7 @@
             "code": "const response = await request.get('https://httpbin.org/get?foo=bar')\nexpect(response.status).to.be.equal(200)\nexpect(response.data.args.foo).to.be.equal('bar')",
             "err": {},
             "isRoot": false,
-<<<<<<< HEAD
-            "uuid": "a085925a-97a9-4d5c-9b7e-e54b847ce701",
-=======
-            "uuid": "00dc2173-287e-4fca-9ff9-34f8a6e08a04",
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "uuid": "f236e60e-fec8-462d-9830-e10d05e864cf",
             "isHook": false,
             "skipped": false
           },
@@ -104,11 +73,7 @@
             "title": "simple POST http request",
             "fullTitle": "request tests simple POST http request",
             "timedOut": false,
-<<<<<<< HEAD
-            "duration": 192,
-=======
-            "duration": 219,
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "duration": 191,
             "state": "passed",
             "speed": "slow",
             "pass": true,
@@ -117,11 +82,7 @@
             "code": "const\nurl       = 'http://httpbin.org/post',\ndata      = { foo:'bar' },\nresponse  = await request.post({ url, data })\nexpect(response.status).to.be.equal(200)\nexpect(response.data.data).to.be.equal('foo=bar')",
             "err": {},
             "isRoot": false,
-<<<<<<< HEAD
-            "uuid": "baa0e70e-bccb-48b0-90dc-74a401161436",
-=======
-            "uuid": "2594a85d-ea0e-4635-abab-ce0e21ebeeeb",
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "uuid": "beb191f2-fdf7-4a04-9e8c-f13c3d85b70c",
             "isHook": false,
             "skipped": false
           },
@@ -129,11 +90,7 @@
             "title": "simple POST https request",
             "fullTitle": "request tests simple POST https request",
             "timedOut": false,
-<<<<<<< HEAD
-            "duration": 287,
-=======
-            "duration": 338,
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "duration": 286,
             "state": "passed",
             "speed": "slow",
             "pass": true,
@@ -142,11 +99,7 @@
             "code": "const\nurl       = 'https://httpbin.org/post',\ndata      = { foo:'bar' },\nresponse  = await request.post({ url, data })\nexpect(response.status).to.be.equal(200)\nexpect(response.data.data).to.be.equal('foo=bar')",
             "err": {},
             "isRoot": false,
-<<<<<<< HEAD
-            "uuid": "33a89086-4c1e-48ea-89cd-2c1391a6b5ec",
-=======
-            "uuid": "3c49b15d-32f9-449d-892a-58409d28eb8d",
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "uuid": "a7cb5284-9a16-4f5d-851a-a05a5a20400f",
             "isHook": false,
             "skipped": false
           },
@@ -154,11 +107,7 @@
             "title": "simple PUT http request",
             "fullTitle": "request tests simple PUT http request",
             "timedOut": false,
-<<<<<<< HEAD
             "duration": 191,
-=======
-            "duration": 213,
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
             "state": "passed",
             "speed": "slow",
             "pass": true,
@@ -167,11 +116,7 @@
             "code": "const\nurl       = 'http://httpbin.org/put',\ndata      = { foo:'bar' },\nresponse  = await request.put({ url, data })\nexpect(response.status).to.be.equal(200)\nexpect(response.data.data).to.be.equal('foo=bar')",
             "err": {},
             "isRoot": false,
-<<<<<<< HEAD
-            "uuid": "2440c24a-8a58-4a47-8756-037378cd1f19",
-=======
-            "uuid": "91b21669-3f06-4125-a7ed-1645ec0ac37b",
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "uuid": "9bafc27c-3524-457a-b400-542e5d49c285",
             "isHook": false,
             "skipped": false
           },
@@ -179,11 +124,7 @@
             "title": "simple PUT https request",
             "fullTitle": "request tests simple PUT https request",
             "timedOut": false,
-<<<<<<< HEAD
-            "duration": 284,
-=======
-            "duration": 354,
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "duration": 286,
             "state": "passed",
             "speed": "slow",
             "pass": true,
@@ -192,11 +133,7 @@
             "code": "const\nurl       = 'https://httpbin.org/put',\ndata      = { foo:'bar' },\nresponse  = await request.put({ url, data })\nexpect(response.status).to.be.equal(200)\nexpect(response.data.data).to.be.equal('foo=bar')",
             "err": {},
             "isRoot": false,
-<<<<<<< HEAD
-            "uuid": "a8a5b5a6-b509-4513-9187-139b44cd4d03",
-=======
-            "uuid": "59bce7db-6cc8-44ab-822c-1296b77927b9",
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "uuid": "3a371d4b-47bf-4c2b-a30f-145ab384a4d2",
             "isHook": false,
             "skipped": false
           },
@@ -204,11 +141,7 @@
             "title": "simple DELETE http request",
             "fullTitle": "request tests simple DELETE http request",
             "timedOut": false,
-<<<<<<< HEAD
-            "duration": 189,
-=======
-            "duration": 230,
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "duration": 193,
             "state": "passed",
             "speed": "slow",
             "pass": true,
@@ -217,11 +150,7 @@
             "code": "const\nurl       = 'http://httpbin.org/delete',\ndata      = { foo:'bar' },\nresponse  = await request.delete({ url, data })\nexpect(response.status).to.be.equal(200)\nexpect(response.data.data).to.be.equal('foo=bar')",
             "err": {},
             "isRoot": false,
-<<<<<<< HEAD
-            "uuid": "37f90c0b-ead3-4d74-91f9-6734d2bddd05",
-=======
-            "uuid": "53a89a5a-98e5-4030-98ee-dba69ed49cb6",
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "uuid": "39ee9bd8-96b7-4ccd-8f89-2dbc82c9f63e",
             "isHook": false,
             "skipped": false
           },
@@ -229,11 +158,7 @@
             "title": "simple DELETE https request",
             "fullTitle": "request tests simple DELETE https request",
             "timedOut": false,
-<<<<<<< HEAD
             "duration": 287,
-=======
-            "duration": 459,
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
             "state": "passed",
             "speed": "slow",
             "pass": true,
@@ -242,10 +167,7 @@
             "code": "const\nurl       = 'https://httpbin.org/delete',\ndata      = { foo:'bar' },\nresponse  = await request.delete({ url, data })\nexpect(response.status).to.be.equal(200)\nexpect(response.data.data).to.be.equal('foo=bar')",
             "err": {},
             "isRoot": false,
-<<<<<<< HEAD
-            "uuid": "2777a5f8-e052-4fc8-b74f-8d9066d44c73",
-=======
-            "uuid": "cfbcf428-0ebe-4088-8791-4d1f04996500",
+            "uuid": "f4d37faa-9834-464c-abec-a2903e2e2c6d",
             "isHook": false,
             "skipped": false
           },
@@ -253,7 +175,7 @@
             "title": "simple GET http request",
             "fullTitle": "request tests simple GET http request",
             "timedOut": false,
-            "duration": 213,
+            "duration": 189,
             "state": "passed",
             "speed": "slow",
             "pass": true,
@@ -262,43 +184,27 @@
             "code": "const\nurl       = 'http://httpbin.org/get?foo=bar',\nheaders   = { 'content-type':'json/application' },\nresponse  = await request.get({ url, headers })\nexpect(response.status).to.be.equal(200)\nexpect(response.data.args.foo).to.be.equal('bar')",
             "err": {},
             "isRoot": false,
-            "uuid": "451dff1b-5bcd-4a14-80a5-95a5c3b213e3",
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+            "uuid": "3b641576-fd72-45f1-bbeb-86a15156a656",
             "isHook": false,
             "skipped": false
           }
         ],
         "suites": [],
         "passes": [
-<<<<<<< HEAD
-          "653727b0-64c0-4a14-8998-930645d882a0",
-          "a085925a-97a9-4d5c-9b7e-e54b847ce701",
-          "baa0e70e-bccb-48b0-90dc-74a401161436",
-          "33a89086-4c1e-48ea-89cd-2c1391a6b5ec",
-          "2440c24a-8a58-4a47-8756-037378cd1f19",
-          "a8a5b5a6-b509-4513-9187-139b44cd4d03",
-          "37f90c0b-ead3-4d74-91f9-6734d2bddd05",
-          "2777a5f8-e052-4fc8-b74f-8d9066d44c73"
-=======
-          "6f546ada-4065-4f20-82ca-5fe1b35b3322",
-          "00dc2173-287e-4fca-9ff9-34f8a6e08a04",
-          "2594a85d-ea0e-4635-abab-ce0e21ebeeeb",
-          "3c49b15d-32f9-449d-892a-58409d28eb8d",
-          "91b21669-3f06-4125-a7ed-1645ec0ac37b",
-          "59bce7db-6cc8-44ab-822c-1296b77927b9",
-          "53a89a5a-98e5-4030-98ee-dba69ed49cb6",
-          "cfbcf428-0ebe-4088-8791-4d1f04996500",
-          "451dff1b-5bcd-4a14-80a5-95a5c3b213e3"
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+          "4926567a-33ca-438b-947c-c9bbb57a9627",
+          "f236e60e-fec8-462d-9830-e10d05e864cf",
+          "beb191f2-fdf7-4a04-9e8c-f13c3d85b70c",
+          "a7cb5284-9a16-4f5d-851a-a05a5a20400f",
+          "9bafc27c-3524-457a-b400-542e5d49c285",
+          "3a371d4b-47bf-4c2b-a30f-145ab384a4d2",
+          "39ee9bd8-96b7-4ccd-8f89-2dbc82c9f63e",
+          "f4d37faa-9834-464c-abec-a2903e2e2c6d",
+          "3b641576-fd72-45f1-bbeb-86a15156a656"
         ],
         "failures": [],
         "pending": [],
         "skipped": [],
-<<<<<<< HEAD
-        "duration": 2043,
-=======
-        "duration": 2750,
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
+        "duration": 2229,
         "root": false,
         "rootEmpty": false,
         "_timeout": 2000
@@ -313,9 +219,5 @@
     "rootEmpty": true,
     "_timeout": 2000
   },
-<<<<<<< HEAD
   "copyrightYear": 2020
-=======
-  "copyrightYear": 2019
->>>>>>> 6bbcd2179286dd54a3e630fd986b53b34cadb5ef
 }
