@@ -54,6 +54,8 @@ module.exports = class
         url     : ''
       }, options)
 
+      this.debug.log('debug request, incoming options:', options)
+
       const
       assigned    = Object.assign({}, this.config.headers, options.headers),
       objectKeys  = Object.keys(assigned),
@@ -80,14 +82,18 @@ module.exports = class
                               return headers
                             })()
       },
+      path    = `${config.method} ${parsed.protocol}://${config.host}:${config.port}${config.path}`,
       request = ( parsed.protocol == 'https:'
                 ? require('https')
                 : require('http')).request(config, (result) =>
       {
+        this.debug.log('debug request, response recieved')
+
         let data = ''
 
         if(options.pipe)
         {
+          this.debug.log('debug request, piping the result')
           result.pipe(options.pipe)
         }
 
@@ -100,9 +106,9 @@ module.exports = class
           }
           catch (e) { /* tried and failed to parse content as json */ }
 
-          this.debug.log('status:',  result.statusCode)
-          this.debug.log('headers:', result.headers)
-          this.debug.log('data:',    data)
+          this.debug.log('debug request, status:',  result.statusCode)
+          this.debug.log('debug request, headers:', result.headers)
+          this.debug.log('debug request, data:',    data)
 
           fulfill(
           {
@@ -114,13 +120,40 @@ module.exports = class
         })
       })
 
-      this.debug.log('options:', config)
+      this.debug.log('debug request, parsed config:', config)
 
       // writing body, if one is declared
-      body && request.write(body)
+      if(body)
+      {
+        this.debug.log('debug request, writing request body:', body)
+        request.write(body)
+      }
 
-      request.on('error',   reject)
-      request.on('timeout', reject)
+      request.on('error',   (clientError) => 
+      {
+        const
+        msg       = `debug request, client error -> ${path}`,
+        error     = new Error(msg)
+
+        this.debug.error(msg)
+
+        error.code      = 'E_REQUEST_CLIENT_ERROR'
+        error.previous  = clientError
+
+        reject(error)
+      })
+
+      request.on('timeout', () => 
+      {
+        const
+        msg       = `debug request, client timeout (${timeout / 1000}s) -> ${path}`,
+        error     = new Error(msg)
+
+        this.debug.error(msg)
+
+        error.code = 'E_REQUEST_CLIENT_TIMEOUT'
+        reject(error)
+      })
       
       request.end()
     })
