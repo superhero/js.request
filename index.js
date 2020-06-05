@@ -119,7 +119,9 @@ module.exports = class
       // writing body, if one is declared
       body && request.write(body)
 
-      request.on('error', reject)
+      request.on('error',   reject)
+      request.on('timeout', reject)
+      
       request.end()
     })
   }
