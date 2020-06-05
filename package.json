@@ -1,6 +1,6 @@
 {
   "name": "@superhero/request",
-  "version": "2.1.5",
+  "version": "2.1.7",
   "description": "Wrapper for the http and https modules request function",
   "repository": "git@github.com:superhero/js.request.git",
   "main": "index.js",
@@ -22,7 +22,7 @@
     "test": "nyc mocha 'test.js'"
   },
   "dependencies": {
-    "@superhero/debug": "1.0.4"
+    "@superhero/debug": "1.1.13"
   },
   "devDependencies": {
     "mocha": "5.1.0",

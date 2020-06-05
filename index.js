@@ -146,7 +146,7 @@ module.exports = class
       request.on('timeout', () => 
       {
         const
-        msg       = `debug request, client timeout (${timeout / 1000}s) -> ${path}`,
+        msg       = `debug request, client timeout (${config.timeout / 1000}s) -> ${path}`,
         error     = new Error(msg)
 
         this.debug.error(msg)
