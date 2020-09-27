@@ -49,6 +49,9 @@ Options for the constructor.
   // headers that will be used in every request
   headers: {},
 
+  // retries amount of specified times if a none 2XX response is returned
+  retry: 0,
+
   // timeout
   timeout: 30e3,
 
@@ -70,6 +73,9 @@ Options for each request
 
   // an object map of headers to send with the request
   headers: {},
+
+  // amount of retries on the request level
+  retry: 0,
 
   // timeout, inherit from setting in the constructor
   timeout: ?,

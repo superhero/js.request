@@ -1,7 +1,8 @@
 const
 Debug       = require('@superhero/debug'),
 url         = require('url'),
-querystring = require('querystring')
+querystring = require('querystring'),
+sleep       = (delay) => new Promise((accept) => setTimeout(accept, delay))
 
 module.exports = class
 {
@@ -12,9 +13,11 @@ module.exports = class
       rejectUnauthorized: true,
       debug             : false,
       headers           : {},
+      retry             : 0,
       timeout           : 30e3,
       url               : ''
     }, config)
+
     this.debug = new Debug({debug:!!this.config.debug})
   }
 
@@ -38,22 +41,43 @@ module.exports = class
     return this.fetch('DELETE', ...args)
   }
 
-  fetch(method, options)
+  async fetch(method, options)
+  {
+    if(typeof options == 'string')
+    {
+      options = { url:options }
+    }
+
+    options = Object.assign(
+    {
+      headers : {},
+      timeout : this.config.timeout,
+      url     : '',
+      port    : this.config.port,
+      retry   : this.config.retry
+    }, options)
+
+    let result, retry, i = 0
+
+    do
+    {
+      result  = await this.resolve(method, options)
+      retry   = i++ < options.retry && (200 & result.status) !== 200
+
+      if(retry)
+      {
+        await sleep(200)
+      }
+    }
+    while(retry)
+
+    return result
+  }
+
+  resolve(method, options)
   {
     return new Promise((fulfill, reject) =>
     {
-      if(typeof options == 'string')
-      {
-        options = { url:options }
-      }
-
-      options = Object.assign(
-      {
-        headers : {},
-        timeout : this.config.timeout,
-        url     : ''
-      }, options)
-
       this.debug.log('debug request, incoming options:', options)
 
       const
@@ -73,7 +97,7 @@ module.exports = class
         auth              : parsed.auth,
         host              : parsed.hostname,
         path              : parsed.path,
-        port              : parsed.port || (parsed.protocol == 'https:' ? 443 : 80),
+        port              : parsed.port || options.port || (parsed.protocol == 'https:' ? 443 : 80),
         timeout           : options.timeout,
         method            : method,
         headers           : (() =>
