@@ -62,7 +62,7 @@ module.exports = class
     do
     {
       result  = await this.resolve(method, options)
-      retry   = i++ < options.retry && (200 & result.status) !== 200
+      retry   = i++ < options.retry && (500 & result.status) === 500
 
       if(retry)
       {
