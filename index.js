@@ -130,6 +130,7 @@ module.exports = class
           }
           catch (e) { /* tried and failed to parse content as json */ }
 
+          this.debug.log('debug request, options:', options)
           this.debug.log('debug request, status:',  result.statusCode)
           this.debug.log('debug request, headers:', result.headers)
           this.debug.log('debug request, data:',    data)
@@ -153,13 +154,13 @@ module.exports = class
         request.write(body)
       }
 
-      request.on('error',   (clientError) => 
+      request.on('error', (clientError) =>
       {
         const
         msg       = `debug request, client error -> ${path}`,
         error     = new Error(msg)
 
-        this.debug.error(msg)
+        this.debug.error(msg, options)
 
         error.code      = 'E_REQUEST_CLIENT_ERROR'
         error.previous  = clientError
@@ -167,18 +168,18 @@ module.exports = class
         reject(error)
       })
 
-      request.on('timeout', () => 
+      request.on('timeout', () =>
       {
         const
         msg       = `debug request, client timeout (${config.timeout / 1000}s) -> ${path}`,
         error     = new Error(msg)
 
-        this.debug.error(msg)
+        this.debug.error(msg, options)
 
         error.code = 'E_REQUEST_CLIENT_TIMEOUT'
         reject(error)
       })
-      
+
       request.end()
     })
   }
