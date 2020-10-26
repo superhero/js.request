@@ -4,7 +4,7 @@ describe('request tests', async () =>
   expect  = require('chai').expect,
   context = require('mochawesome/addContext'),
   Request = require('.'),
-  request = new Request
+  request = new Request({ debug:false })
 
   it('simple GET http request', async () =>
   {
@@ -89,5 +89,15 @@ describe('request tests', async () =>
 
     expect(response.status).to.be.equal(200)
     expect(response.data.args.foo).to.be.equal('bar')
+  })
+
+  it('500 error test', async () =>
+  {
+    const
+    url       = 'http://httpbin.org/status/500',
+    headers   = { 'content-type':'json/application' },
+    response  = await request.get({ url, headers, retry:3 })
+
+    expect(response.status).to.be.equal(500)
   })
 })

@@ -1,8 +1,8 @@
 const
-Debug       = require('@superhero/debug'),
-url         = require('url'),
-querystring = require('querystring'),
-sleep       = (delay) => new Promise((accept) => setTimeout(accept, delay))
+  Debug       = require('@superhero/debug'),
+  url         = require('url'),
+  querystring = require('querystring'),
+  sleep       = (delay) => new Promise((accept) => setTimeout(accept, delay))
 
 module.exports = class
 {
@@ -12,13 +12,24 @@ module.exports = class
     {
       rejectUnauthorized: true,
       debug             : false,
+      debug_color       : 'cyan',
+      debug_date        : true,
+      debug_prefix      : 'debug request:',
+      debug_separator   : ' ',
       headers           : {},
       retry             : 0,
       timeout           : 30e3,
       url               : ''
     }, config)
 
-    this.debug = new Debug({debug:!!this.config.debug})
+    this.debug = new Debug(
+    {
+      color     : this.config.debug_color,
+      date      : this.config.debug_date,
+      prefix    : this.config.debug_prefix,
+      separator : this.config.debug_separator,
+      debug     : this.config.debug
+    })
   }
 
   get(...args)
@@ -61,9 +72,14 @@ module.exports = class
 
     do
     {
-      result  = await this.resolve(method, options)
-      retry   = i++ < options.retry && (500 & result.status) === 500
-
+      try
+      {
+        result = await this.resolve(method, options)
+      }
+      catch(error)
+      {
+        retry = ++i < options.retry
+      }
       if(retry)
       {
         await sleep(200)
@@ -78,87 +94,53 @@ module.exports = class
   {
     return new Promise((fulfill, reject) =>
     {
-      this.debug.log('debug request, incoming options:', options)
+      this.debug.log('incoming options:', options)
 
       const
-      assigned    = Object.assign({}, this.config.headers, options.headers),
-      objectKeys  = Object.keys(assigned),
-      headers     = objectKeys.reduce((c, k) => (c[k.toLowerCase()] = assigned[k], c), {}),
-      body        = typeof (options.data || '') == 'string'
-                    ? options.data
-                    : ( headers['content-type'] || '' ).startsWith('application/json')
-                      ? JSON.stringify(options.data)
-                      : querystring.stringify(options.data),
-      composed    = this.config.url + options.url,
-      parsed      = url.parse(composed, false, true),
-      config      =
-      {
-        rejectUnauthorized: options.rejectUnauthorized,
-        auth              : parsed.auth,
-        host              : parsed.hostname,
-        path              : parsed.path,
-        port              : parsed.port || options.port || (parsed.protocol == 'https:' ? 443 : 80),
-        timeout           : options.timeout,
-        method            : method,
-        headers           : (() =>
-                            {
-                              headers['Content-Length'] = Buffer.byteLength(body || '', 'utf8');
-                              return headers
-                            })()
-      },
-      path    = `${config.method} ${parsed.protocol}://${config.host}:${config.port}${config.path}`,
-      request = ( parsed.protocol == 'https:'
-                ? require('https')
-                : require('http')).request(config, (result) =>
-      {
-        this.debug.log('debug request, response recieved')
-
-        let data = ''
-
-        if(options.pipe)
+        assigned    = Object.assign({}, this.config.headers, options.headers),
+        objectKeys  = Object.keys(assigned),
+        headers     = objectKeys.reduce((c, k) => (c[k.toLowerCase()] = assigned[k], c), {}),
+        body        = typeof (options.data || '') == 'string'
+                      ? options.data
+                      : ( headers['content-type'] || '' ).startsWith('application/json')
+                        ? JSON.stringify(options.data)
+                        : querystring.stringify(options.data),
+        composedUrl = this.config.url + options.url,
+        parsed      = url.parse(composedUrl, false, true),
+        config      =
         {
-          this.debug.log('debug request, piping the result')
-          result.pipe(options.pipe)
-        }
+          rejectUnauthorized: options.rejectUnauthorized,
+          auth              : parsed.auth,
+          host              : parsed.hostname,
+          path              : parsed.path,
+          port              : parsed.port || options.port || (parsed.protocol == 'https:' ? 443 : 80),
+          timeout           : options.timeout,
+          method            : method,
+          headers           : (() =>
+                              {
+                                headers['Content-Length'] = Buffer.byteLength(body || '', 'utf8');
+                                return headers
+                              })()
+        },
+        path    = `${config.method} ${parsed.protocol}://${config.host}:${config.port}${config.path}`,
+        request = ( parsed.protocol == 'https:'
+                  ? require('https')
+                  : require('http')).request(config, this.onResult.bind(this, fulfill, options, composedUrl))
 
-        result.on('data', (chunk) => data += chunk)
-        result.on('end',  ()      =>
-        {
-          try
-          {
-            data = JSON.parse(data)
-          }
-          catch (e) { /* tried and failed to parse content as json */ }
-
-          this.debug.log('debug request, options:', options)
-          this.debug.log('debug request, status:',  result.statusCode)
-          this.debug.log('debug request, headers:', result.headers)
-          this.debug.log('debug request, data:',    data)
-
-          fulfill(
-          {
-            url     : composed,
-            status  : result.statusCode,
-            headers : result.headers,
-            data    : data
-          })
-        })
-      })
-
-      this.debug.log('debug request, parsed config:', config)
+      this.debug.log('parsed config:', config)
 
       // writing body, if one is declared
       if(body)
       {
-        this.debug.log('debug request, writing request body:', body)
+        this.debug.log('writing request body:', body)
         request.write(body)
       }
 
       request.on('error', (clientError) =>
       {
         const
-        msg       = `debug request, client error -> ${path}`,
-        error     = new Error(msg)
+          msg   = `client error -> ${path}`,
+          error = new Error(msg)
 
         this.debug.error(msg, options)
 
@@ -170,9 +152,11 @@ module.exports = class
 
       request.on('timeout', () =>
       {
+        request.destroy()
+
         const
-        msg       = `debug request, client timeout (${config.timeout / 1000}s) -> ${path}`,
-        error     = new Error(msg)
+          msg   = `client timeout (${config.timeout / 1000}s) -> ${path}`,
+          error = new Error(msg)
 
         this.debug.error(msg, options)
 
@@ -181,6 +165,42 @@ module.exports = class
       })
 
       request.end()
+    })
+  }
+
+  onResult(fulfill, options, url, result)
+  {
+    this.debug.log('response recieved')
+
+    let data = ''
+
+    if(options.pipe)
+    {
+      this.debug.log('piping the result')
+      result.pipe(options.pipe)
+    }
+
+    result.on('data', (chunk) => data += chunk)
+    result.on('end', () =>
+    {
+      try
+      {
+        data = JSON.parse(data)
+      }
+      catch (e) { /* tried and failed to parse content as json */ }
+
+      this.debug.log('options:', options)
+      this.debug.log('status:',  result.statusCode)
+      this.debug.log('headers:', result.headers)
+      this.debug.log('data:',    data)
+
+      fulfill(
+      {
+        url     : url,
+        status  : result.statusCode,
+        headers : result.headers,
+        data    : data
+      })
     })
   }
 }

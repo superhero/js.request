@@ -43,6 +43,18 @@ Options for the constructor.
   // if true, some output for debugging is logged to the console
   debug: false,
 
+  // debug console color
+  debug_color: 'cyan',
+
+  // if the debug console should be prefixed with the date time
+  debug_date: true',
+
+  // the debug prefix message
+  debug_prefix: 'debug request:',
+
+  // a seperator between debug message
+  debug_separator: ' ',
+
   // this url will be used to resolve any provided url in the fetch call
   url: '',
 
