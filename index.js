@@ -187,7 +187,10 @@ module.exports = class
       {
         data = JSON.parse(data)
       }
-      catch (e) { /* tried and failed to parse content as json */ }
+      catch (e) 
+      {
+        this.debug.log('tried and failed to parse content as json:', e.message)
+      }
 
       this.debug.log('options:', options)
       this.debug.log('status:',  result.statusCode)
