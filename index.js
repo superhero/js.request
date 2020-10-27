@@ -78,7 +78,7 @@ module.exports = class
       }
       catch(error)
       {
-        retry = ++i < options.retry
+        retry = error.code === 'E_REQUEST_CLIENT_ERROR' && ++i < options.retry
       }
       if(retry)
       {
