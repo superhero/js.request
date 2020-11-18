@@ -87,7 +87,12 @@ module.exports = class
       }
       catch(error)
       {
-        retry = error.code === 'E_REQUEST_CLIENT_ERROR' && ++i < options.retry
+        const
+          isClientError         = error.code === 'E_REQUEST_CLIENT_ERROR',
+          isClientTimeoutError  = error.code === 'E_REQUEST_CLIENT_TIMEOUT',
+          isInRetryLoopSpan     = ++i < options.retry
+
+        retry = isInRetryLoopSpan && (isClientError || (options.retryOnClientTimeout && isClientTimeoutError))
         
         if(!retry)
         {
