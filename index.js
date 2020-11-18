@@ -61,6 +61,7 @@ module.exports = class
 
     options = Object.assign(
     {
+      method,
       headers : {},
       timeout : this.config.timeout,
       url     : '',
@@ -81,7 +82,7 @@ module.exports = class
     {
       try
       {
-        result  = await this.resolve(method, options)
+        result  = await this.resolve(options.method, options)
         retry   = false
       }
       catch(error)

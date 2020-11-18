@@ -4,7 +4,7 @@ describe('request tests', async () =>
   expect  = require('chai').expect,
   context = require('mochawesome/addContext'),
   Request = require('.'),
-  request = new Request({ debug:true })
+  request = new Request({ debug:false })
 
   it('simple GET http request', async () =>
   {
@@ -101,13 +101,20 @@ describe('request tests', async () =>
     expect(response.status).to.be.equal(500)
   })
 
-  it.only('408 error test', async () =>
+  it('408 error test', async () =>
   {
     const
-    url       = 'http://httpbin.org/delay/2',
-    headers   = { 'content-type':'json/application' },
-    response  = await request.get({ url, headers, timeout:10 })
+    url     = 'http://httpbin.org/delay/2',
+    headers = { 'content-type':'json/application' }
 
-    expect(response.status).to.be.equal(500)
+    try
+    {
+      const response = await request.get({ url, headers, timeout:10 })
+      expect(response).to.be.equal('should never happen')
+    }
+    catch(error)
+    {
+      expect(error.code).to.be.equal('E_REQUEST_CLIENT_TIMEOUT')
+    }
   })
 })
