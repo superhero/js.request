@@ -4,7 +4,7 @@ describe('request tests', async () =>
   expect  = require('chai').expect,
   context = require('mochawesome/addContext'),
   Request = require('.'),
-  request = new Request({ debug:false })
+  request = new Request({ debug:true })
 
   it('simple GET http request', async () =>
   {
@@ -101,7 +101,7 @@ describe('request tests', async () =>
     expect(response.status).to.be.equal(500)
   })
 
-  it('408 error test', async () =>
+  it.only('408 error test', async () =>
   {
     const
     url       = 'http://httpbin.org/delay/2',
