@@ -2,7 +2,7 @@ const
   Debug       = require('@superhero/debug'),
   url         = require('url'),
   querystring = require('querystring'),
-  sleep       = (delay) => new Promise((accept) => setTimeout(accept, delay))
+  sleep       = (delay) => new Promise((go) => setTimeout(go, delay))
 
 module.exports = class
 {
@@ -79,6 +79,11 @@ module.exports = class
       catch(error)
       {
         retry = error.code === 'E_REQUEST_CLIENT_ERROR' && ++i < options.retry
+        
+        if(!retry)
+        {
+          throw error
+        }
       }
       if(retry)
       {
