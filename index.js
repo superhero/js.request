@@ -152,8 +152,6 @@ module.exports = class
 
       request.on('timeout', () =>
       {
-        request.destroy()
-
         const
           msg   = `client timeout (${config.timeout / 1000}s) -> ${path}`,
           error = new Error(msg)
@@ -161,7 +159,10 @@ module.exports = class
         this.debug.error(msg, options)
 
         error.code = 'E_REQUEST_CLIENT_TIMEOUT'
+
         reject(error)
+
+        request.destroy()
       })
 
       request.end()
@@ -190,7 +191,7 @@ module.exports = class
     else
     {
       result.on('data', (chunk) => data += chunk)
-      result.on('end', () =>
+      result.on('end',  () =>
       {
         try
         {

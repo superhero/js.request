@@ -100,4 +100,14 @@ describe('request tests', async () =>
 
     expect(response.status).to.be.equal(500)
   })
+
+  it('408 error test', async () =>
+  {
+    const
+    url       = 'http://httpbin.org/delay/2',
+    headers   = { 'content-type':'json/application' },
+    response  = await request.get({ url, headers, timeout:10 })
+
+    expect(response.status).to.be.equal(500)
+  })
 })
