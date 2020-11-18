@@ -53,7 +53,7 @@ Options for the constructor.
   debug_prefix: 'debug request:',
 
   // a seperator between debug message
-  debug_separator: ' ',
+  debug_separator: ' '
 
   // this url will be used to resolve any provided url in the fetch call
   url: '',
@@ -93,6 +93,9 @@ Options for each request
   timeout: ?,
 
   // https://nodejs.org/api/stream.html#stream_writable_streams
-  pipe: Writable
+  pipe: Writable,
+
+  // alias for pipe
+  stream: Writable
 }
 ```

@@ -174,36 +174,46 @@ module.exports = class
 
     let data = ''
 
-    if(options.pipe)
+    if(options.pipe || options.stream)
     {
       this.debug.log('piping the result')
-      result.pipe(options.pipe)
-    }
-
-    result.on('data', (chunk) => data += chunk)
-    result.on('end', () =>
-    {
-      try
-      {
-        data = JSON.parse(data)
-      }
-      catch (e) 
-      {
-        this.debug.log('tried and failed to parse content as json:', e.message)
-      }
-
-      this.debug.log('options:', options)
-      this.debug.log('status:',  result.statusCode)
-      this.debug.log('headers:', result.headers)
-      this.debug.log('data:',    data)
+      result.pipe(options.pipe || options.stream)
 
       fulfill(
       {
         url     : url,
         status  : result.statusCode,
         headers : result.headers,
-        data    : data
+        stream  : result
       })
-    })
+    }
+    else
+    {
+      result.on('data', (chunk) => data += chunk)
+      result.on('end', () =>
+      {
+        try
+        {
+          data = JSON.parse(data)
+        }
+        catch (e) 
+        {
+          this.debug.log('tried and failed to parse content as json:', e.message)
+        }
+
+        this.debug.log('options:', options)
+        this.debug.log('status:',  result.statusCode)
+        this.debug.log('headers:', result.headers)
+        this.debug.log('data:',    data)
+
+        fulfill(
+        {
+          url     : url,
+          status  : result.statusCode,
+          headers : result.headers,
+          data    : data
+        })
+      })
+    }
   }
 }
