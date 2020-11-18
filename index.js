@@ -68,13 +68,21 @@ module.exports = class
       retry   : this.config.retry
     }, options)
 
+    const result = await this.resolveThroughRetryLoop(options)
+
+    return result
+  }
+
+  async resolveThroughRetryLoop(options)
+  {
     let result, retry, i = 0
 
     do
     {
       try
       {
-        result = await this.resolve(method, options)
+        result  = await this.resolve(method, options)
+        retry   = false
       }
       catch(error)
       {
