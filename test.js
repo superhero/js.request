@@ -91,6 +91,16 @@ describe('request tests', async () =>
     expect(response.data.args.foo).to.be.equal('bar')
   })
 
+  it('204 status test', async () =>
+  {
+    const
+    url       = 'http://httpbin.org/status/204',
+    headers   = { 'content-type':'json/application', accept:'json/application' },
+    response  = await request.put({ url, headers, retry:3 })
+
+    expect(response.status).to.be.equal(204)
+  })
+
   it('500 error test', async () =>
   {
     const

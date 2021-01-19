@@ -207,6 +207,16 @@ module.exports = class
         stream  : result
       })
     }
+    else if(result.readableEnded)
+    {
+      fulfill(
+      {
+        url     : url,
+        status  : result.statusCode,
+        headers : result.headers,
+        data    : data
+      })
+    }
     else
     {
       result.on('data', (chunk) => data += chunk)
