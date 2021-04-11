@@ -19,7 +19,8 @@ module.exports = class
       headers           : {},
       retry             : 0,
       timeout           : 30e3,
-      url               : ''
+      url               : '',
+      proxy             : ''
     }, config)
 
     this.debug = new Debug(
@@ -125,24 +126,26 @@ module.exports = class
                         ? JSON.stringify(options.data)
                         : querystring.stringify(options.data),
         composedUrl = this.config.url + options.url,
-        parsed      = url.parse(composedUrl, false, true),
+        parsedUrl   = url.parse(composedUrl, false, true),
+        parsedProxy = url.parse(this.config.proxy, false, true),
         config      =
         {
           rejectUnauthorized: options.rejectUnauthorized,
-          auth              : parsed.auth,
-          host              : parsed.hostname,
-          path              : parsed.path,
-          port              : parsed.port || options.port || (parsed.protocol == 'https:' ? 443 : 80),
+          auth              : parsedProxy.auth,
+          host              : parsedProxy.hostname,
+          path              : parsedUrl.href,
+          port              : parsedProxy.port,
           timeout           : options.timeout,
           method            : method,
           headers           : (() =>
                               {
-                                headers['Content-Length'] = Buffer.byteLength(body || '', 'utf8');
+                                headers['content-length'] = Buffer.byteLength(body || '', 'utf8')
+                                headers['host']           = parsedUrl.hostname
                                 return headers
                               })()
         },
-        path    = `${config.method} ${parsed.protocol}://${config.host}:${config.port}${config.path}`,
-        request = ( parsed.protocol == 'https:'
+        path    = `${config.method} ${parsedUrl.protocol}//${config.host}:${config.port}${config.path}`,
+        request = ( parsedUrl.protocol == 'https:'
                   ? require('https')
                   : require('http')).request(config, this.onResult.bind(this, fulfill, options, composedUrl))
 
