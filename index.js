@@ -127,24 +127,29 @@ module.exports = class
                         : querystring.stringify(options.data),
         composedUrl = this.config.url + options.url,
         parsedUrl   = url.parse(composedUrl, false, true),
-        parsedProxy = url.parse(this.config.proxy, false, true),
         config      =
         {
           rejectUnauthorized: options.rejectUnauthorized,
-          auth              : parsedProxy.auth,
-          host              : parsedProxy.hostname,
-          path              : parsedUrl.href,
-          port              : parsedProxy.port,
+          auth              : parsedUrl.auth,
+          host              : parsedUrl.hostname,
+          port              : parsedUrl.port,
+          path              : parsedUrl.path,
           timeout           : options.timeout,
           method            : method,
           headers           : (() =>
                               {
                                 headers['content-length'] = Buffer.byteLength(body || '', 'utf8')
-                                headers['host']           = parsedUrl.hostname
                                 return headers
                               })()
-        },
-        path    = `${config.method} ${parsedUrl.protocol}//${config.host}:${config.port}${config.path}`,
+        }
+
+      // removes null valued keys from the config object
+      for(const key in config)
+        if(config[key] === null)
+          delete config[key]
+
+      const
+        path    = `${method} ${parsedUrl.href}`,
         request = ( parsedUrl.protocol == 'https:'
                   ? require('https')
                   : require('http')).request(config, this.onResult.bind(this, fulfill, options, composedUrl))
