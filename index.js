@@ -20,7 +20,7 @@ module.exports = class
       retry             : 0,
       timeout           : 30e3,
       url               : '',
-      proxy             : ''
+      proxy             : process.env.HTTP_PROXY
     }, config)
 
     this.debug = new Debug(
@@ -127,7 +127,7 @@ module.exports = class
                         : querystring.stringify(options.data),
         composedUrl = this.config.url + options.url,
         parsedUrl   = url.parse(composedUrl, false, true),
-        parsedProxy = url.parse(this.config.proxy, false, true),
+        parsedProxy = url.parse(this.config.proxy || '', false, true),
         config      = this.config.proxy
                     ?
                     {

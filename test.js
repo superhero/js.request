@@ -6,6 +6,14 @@ describe('request tests', async () =>
   Request = require('.'),
   request = new Request({ debug:false })
 
+  after(() =>
+  {
+    console.log('\n')
+    process.env.HTTP_PROXY
+    ? console.log(`HTTP_PROXY env variable is set to: ${process.env.HTTP_PROXY}`)
+    : console.log('HTTP_PROXY env variable is not set')
+  })
+
   it('simple GET http request', async () =>
   {
     const response = await request.get('http://httpbin.org/get?foo=bar')
