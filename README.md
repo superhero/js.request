@@ -58,6 +58,9 @@ Options for the constructor.
   // this url will be used to resolve any provided url in the fetch call
   url: '',
 
+  // optional proxy url (example: http://user:password@www.example.com:666)
+  proxy: '',
+
   // headers that will be used in every request
   headers: {},
 

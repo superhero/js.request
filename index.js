@@ -127,21 +127,32 @@ module.exports = class
                         : querystring.stringify(options.data),
         composedUrl = this.config.url + options.url,
         parsedUrl   = url.parse(composedUrl, false, true),
-        config      =
+        parsedProxy = url.parse(this.config.proxy, false, true),
+        config      = this.config.proxy
+                    ?
+                    {
+                      auth  : parsedProxy.auth,
+                      host  : parsedProxy.hostname,
+                      path  : parsedUrl.href,
+                      port  : parsedProxy.port,
+                    }
+                    :
+                    {
+                      auth  : parsedUrl.auth,
+                      host  : parsedUrl.hostname,
+                      port  : parsedUrl.port,
+                      path  : parsedUrl.path,
+                    }
+
+        config.rejectUnauthorized = options.rejectUnauthorized
+        config.timeout            = options.timeout
+        config.method             = method
+        config.headers            = (() =>
         {
-          rejectUnauthorized: options.rejectUnauthorized,
-          auth              : parsedUrl.auth,
-          host              : parsedUrl.hostname,
-          port              : parsedUrl.port,
-          path              : parsedUrl.path,
-          timeout           : options.timeout,
-          method            : method,
-          headers           : (() =>
-                              {
-                                headers['content-length'] = Buffer.byteLength(body || '', 'utf8')
-                                return headers
-                              })()
-        }
+          headers['content-length'] = Buffer.byteLength(body || '', 'utf8')
+          headers['host']           = parsedUrl.hostname
+          return headers
+        })()
 
       // removes null valued keys from the config object
       for(const key in config)
