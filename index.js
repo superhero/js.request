@@ -150,7 +150,7 @@ module.exports = class
         config.headers            = (() =>
         {
           headers['content-length'] = Buffer.byteLength(body || '', 'utf8')
-          headers['host']           = parsedUrl.hostname
+          headers['host']           = parsedProxy.hostname
           return headers
         })()
 
