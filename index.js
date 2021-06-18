@@ -125,8 +125,20 @@ module.exports = class
                       : ( headers['content-type'] || '' ).startsWith('application/json')
                         ? JSON.stringify(options.data)
                         : querystring.stringify(options.data),
-        composedUrl = this.config.url + options.url,
-        parsedUrl   = url.parse(composedUrl, false, true),
+        composedUrl = this.config.url + options.url
+
+      let parsedUrl
+      try 
+      {
+        parsedUrl = url.parse(composedUrl, false, true)
+      } 
+      catch (error) 
+      {
+        const encodedUrl = encodeURI(composedUrl)
+        parsedUrl = url.parse(encodedUrl, false, true)
+      }
+
+      const
         parsedProxy = url.parse(this.config.proxy || '', false, true),
         config      = this.config.proxy
                     ?
@@ -144,6 +156,7 @@ module.exports = class
                       path  : parsedUrl.path,
                     }
 
+        
         config.rejectUnauthorized = options.rejectUnauthorized
         config.timeout            = options.timeout
         config.method             = method
