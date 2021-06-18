@@ -163,7 +163,6 @@ module.exports = class
         config.headers            = (() =>
         {
           headers['content-length'] = Buffer.byteLength(body || '', 'utf8')
-          headers['host']           = parsedProxy.hostname
           return headers
         })()
 
@@ -174,9 +173,9 @@ module.exports = class
 
       const
         path    = `${method} ${parsedUrl.href}`,
-        request = ( parsedUrl.protocol == 'https:'
-                  ? require('https')
-                  : require('http')).request(config, this.onResult.bind(this, fulfill, options, composedUrl))
+        request = ( this.config.proxy || parsedUrl.protocol === 'http:'
+                  ? require('http')
+                  : require('https')).request(config, this.onResult.bind(this, fulfill, options, composedUrl))
 
       this.debug.log('parsed config:', config)
 
