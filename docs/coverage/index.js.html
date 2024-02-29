@@ -313,7 +313,20 @@
 <a name='L265'></a><a href='#L265'>265</a>
 <a name='L266'></a><a href='#L266'>266</a>
 <a name='L267'></a><a href='#L267'>267</a>
-<a name='L268'></a><a href='#L268'>268</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L268'></a><a href='#L268'>268</a>
+<a name='L269'></a><a href='#L269'>269</a>
+<a name='L270'></a><a href='#L270'>270</a>
+<a name='L271'></a><a href='#L271'>271</a>
+<a name='L272'></a><a href='#L272'>272</a>
+<a name='L273'></a><a href='#L273'>273</a>
+<a name='L274'></a><a href='#L274'>274</a>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a>
+<a name='L277'></a><a href='#L277'>277</a>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -580,6 +593,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const
   Debug       = require('@superhero/debug'),
   url         = require('url'),
@@ -702,17 +728,29 @@ module.exports = class
         assigned    = Object.assign({}, this.config.headers, options.headers),
         objectKeys  = Object.keys(assigned),
         headers     = objectKeys.reduce((c, k) =&gt; (c[k.toLowerCase()] = assigned[k], c), {}),
-        body        = typeof (options.data || '') == 'string'
+        body        = typeof (options.data || '') == 'string' || Buffer.isBuffer(options.data)
                       ? options.data
                       : ( headers['content-type'] || '' ).startsWith('application/json')
                         ? <span class="branch-0 cbranch-no" title="branch not covered" >JSON.stringify(options.data)</span>
                         : querystring.stringify(options.data),
-        composedUrl = this.config.url + options.url,
-        parsedUrl   = url.parse(composedUrl, false, true),
+        composedUrl = this.config.url + options.url
+&nbsp;
+      let parsedUrl
+      try 
+      {
+        parsedUrl = <span class="branch-0 cbranch-no" title="branch not covered" >url.parse(composedUrl, false, true)</span>
+      } 
+      catch (error) 
+      {
+        const encodedUrl = encodeURI(composedUrl)
+        parsedUrl = url.parse(encodedUrl, false, true)
+      }
+&nbsp;
+      const
         parsedProxy = url.parse(this.config.proxy || '', false, true),
         config      = this.config.proxy
                     ?
-<span class="branch-0 cbranch-no" title="branch not covered" >                    {</span>
+                    {
                       auth  : parsedProxy.auth,
                       host  : parsedProxy.hostname,
                       path  : parsedUrl.href,
@@ -721,11 +759,12 @@ module.exports = class
                     :
                     {
                       auth  : parsedUrl.auth,
-                      host  : parsedUrl.hostname,
+<span class="branch-0 cbranch-no" title="branch not covered" >                      host  : parsedUrl.hostname,</span>
                       port  : parsedUrl.port,
                       path  : parsedUrl.path,
                     }
 &nbsp;
+        
         config.rejectUnauthorized = options.rejectUnauthorized
         config.timeout            = options.timeout
         config.method             = method
@@ -733,7 +772,7 @@ module.exports = class
         {
           headers['content-length'] = Buffer.byteLength(body || '', 'utf8')
           return headers
-        })()<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+        })()
 &nbsp;
       // removes null valued keys from the config object
       for(const key in config)
@@ -784,12 +823,12 @@ module.exports = class
         request.destroy()
       })
 &nbsp;
-      request.end()
+    <span class="missing-if-branch" title="if path not taken" >I</span>  request.end()
     })
-  }
-&nbsp;
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   onResult(fulfill, options, url, result)
-  {
+  {<span class="cstat-no" title="statement not covered" ></span>
     this.debug.log('response recieved')
 &nbsp;
     let data = ''
@@ -797,12 +836,12 @@ module.exports = class
     if(options.pipe || options.stream)
     {
       this.debug.log('piping the result')
-    <span class="missing-if-branch" title="if path not taken" >I</span>  result.pipe(options.pipe || options.stream)
+      res<span class="missing-if-branch" title="if path not taken" >I</span>ult.pipe(options.pipe || options.stream)
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      fulfill(</span>
-<span class="cstat-no" title="statement not covered" >      {</span>
+      {
         url     : url,
-<span class="cstat-no" title="statement not covered" >        status  : result.statusCode,</span>
+        status  : result.statusCode,
         headers : result.headers,
         stream  : result
       })
@@ -810,9 +849,9 @@ module.exports = class
     else if(result.readableEnded)
     {
       fulfill(
-      {<span class="missing-if-branch" title="if path not taken" >I</span>
+      {
         url     : url,
-<span class="cstat-no" title="statement not covered" >        status  : result.statusCode,</span>
+        status  : result.statusCode,
         headers : result.headers,
         data    : data
       })
@@ -853,7 +892,7 @@ module.exports = class
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Fri Apr 16 2021 17:31:59 GMT+0200 (Central European Summer Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Feb 29 2024 11:38:24 GMT+0100 (Central European Standard Time)
 </div>
 </div>
 <script src="prettify.js"></script>

@@ -120,7 +120,7 @@ module.exports = class
         assigned    = Object.assign({}, this.config.headers, options.headers),
         objectKeys  = Object.keys(assigned),
         headers     = objectKeys.reduce((c, k) => (c[k.toLowerCase()] = assigned[k], c), {}),
-        body        = typeof (options.data || '') == 'string'
+        body        = typeof (options.data || '') == 'string' || Buffer.isBuffer(options.data)
                       ? options.data
                       : ( headers['content-type'] || '' ).startsWith('application/json')
                         ? JSON.stringify(options.data)
