@@ -39,6 +39,7 @@ module.exports = class
       debug_separator     : ' ',
       headers             : {},
       retry               : 0,
+      retryDelay          : 200,
       retryOnClientTimeout: undefined,
       retryOnResponseError: undefined,
       timeout             : 30e3,
@@ -91,6 +92,7 @@ module.exports = class
       url     : '',
       port    : this.config.port,
       retry   : this.config.retry,
+      retryDelay : this.config.retryDelay,
       retryOnClientTimeout : this.config.retryOnClientTimeout === undefined
                            ? method === 'GET'
                            : this.config.retryOnClientTimeout,
@@ -133,6 +135,19 @@ module.exports = class
                || (options.retryOnClientTimeout && isClientTimeoutError)
                || (options.retryOnResponseError && isResponseClientError))
 
+        if(retry)
+        {
+          this.debug.log('retrying request:',
+          {
+            attempt         : i + 1,
+            maximumAttempts : options.retry,
+            code            : error.code,
+            method          : options.method,
+            url             : options.url,
+            delayMs         : options.retryDelay
+          })
+        }
+
         if(!retry)
         {
           throw error
@@ -140,7 +155,7 @@ module.exports = class
       }
       if(retry)
       {
-        await sleep(200)
+        await sleep(options.retryDelay)
       }
     }
     while(retry)

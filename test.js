@@ -104,7 +104,7 @@ describe('request tests', async () =>
     server.listen(0, '127.0.0.1', () =>
     {
       baseUrl = `http://127.0.0.1:${server.address().port}`
-      request = new Request({ debug:false, proxy:'' })
+      request = new Request({ debug:false, proxy:'', retryDelay:0 })
       done()
     })
   })

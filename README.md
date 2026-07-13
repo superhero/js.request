@@ -67,6 +67,9 @@ Options for the constructor.
   // maximum attempts for retryable transport failures; values below 2 disable retries
   retry: 0,
 
+  // delay in milliseconds before each retry
+  retryDelay: 200,
+
   // retry client timeouts; defaults to true for GET, otherwise false
   retryOnClientTimeout: undefined,
 
@@ -97,6 +100,9 @@ Options for each request
 
   // maximum attempts for retryable transport failures; values below 2 disable retries
   retry: 0,
+
+  // delay in milliseconds before each retry; inherits the constructor setting
+  retryDelay: 200,
 
   // retry client timeouts; defaults to true for GET, otherwise false
   retryOnClientTimeout: undefined,
