@@ -125,3 +125,28 @@ Response retries apply to buffered responses. Piped or streamed responses are
 fulfilled when the response stream is returned, so later stream failures cannot
 restart the request. Enabling retries for POST, PUT, or DELETE can repeat a
 request the server has already processed.
+
+## Errors
+
+Rejected requests return an `Error` with one of the following `code` values:
+
+| Code                            | When it occurs                                                                 |
+|---------------------------------|--------------------------------------------------------------------------------|
+| `E_REQUEST_CLIENT_ERROR`        | The request emits an error, such as a DNS, connection, TLS, or socket failure. |
+| `E_REQUEST_CLIENT_TIMEOUT`      | The request socket remains inactive for the configured `timeout`.              |
+| `E_REQUEST_RESPONSE_ERROR`      | The response stream emits an error after response headers have arrived.        |
+| `E_REQUEST_RESPONSE_ABORTED`    | The remote side aborts the response before it finishes.                        |
+| `E_REQUEST_RESPONSE_INCOMPLETE` | The response closes before the complete HTTP message is received.              |
+
+`E_REQUEST_CLIENT_ERROR` and `E_REQUEST_RESPONSE_ERROR` include the original
+Node.js error as `error.previous`. A timeout destroys the request after rejecting
+it.
+
+An interrupted response can emit `aborted`, `error`, and an incomplete `close`
+for the same underlying failure. The request Promise keeps the first rejection,
+so the exact response error code can depend on which event Node.js emits first.
+
+When retry attempts remain, `E_REQUEST_CLIENT_ERROR` is retryable.
+`E_REQUEST_CLIENT_TIMEOUT` requires `retryOnClientTimeout`, and all response
+error codes require `retryOnResponseError`. Both retry options default to `true`
+for GET and `false` for other methods.
