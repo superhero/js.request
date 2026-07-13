@@ -64,8 +64,14 @@ Options for the constructor.
   // headers that will be used in every request
   headers: {},
 
-  // retries amount of specified times if a none 2XX response is returned
+  // maximum attempts for retryable transport failures; values below 2 disable retries
   retry: 0,
+
+  // retry client timeouts; defaults to true for GET, otherwise false
+  retryOnClientTimeout: undefined,
+
+  // retry interrupted or incomplete responses; defaults to true for GET
+  retryOnResponseError: undefined,
 
   // timeout
   timeout: 30e3,
@@ -89,8 +95,14 @@ Options for each request
   // an object map of headers to send with the request
   headers: {},
 
-  // amount of retries on the request level
+  // maximum attempts for retryable transport failures; values below 2 disable retries
   retry: 0,
+
+  // retry client timeouts; defaults to true for GET, otherwise false
+  retryOnClientTimeout: undefined,
+
+  // retry interrupted or incomplete responses; defaults to true for GET
+  retryOnResponseError: undefined,
 
   // timeout, inherit from setting in the constructor
   timeout: ?,
@@ -102,3 +114,8 @@ Options for each request
   stream: Writable
 }
 ```
+
+Response retries apply to buffered responses. Piped or streamed responses are
+fulfilled when the response stream is returned, so later stream failures cannot
+restart the request. Enabling retries for POST, PUT, or DELETE can repeat a
+request the server has already processed.

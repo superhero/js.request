@@ -31,17 +31,19 @@ module.exports = class
   {
     this.config = Object.assign(
     {
-      rejectUnauthorized: true,
-      debug             : false,
-      debug_color       : 'cyan',
-      debug_date        : true,
-      debug_prefix      : 'debug request:',
-      debug_separator   : ' ',
-      headers           : {},
-      retry             : 0,
-      timeout           : 30e3,
-      url               : '',
-      proxy             : process.env.HTTP_PROXY
+      rejectUnauthorized  : true,
+      debug               : false,
+      debug_color         : 'cyan',
+      debug_date          : true,
+      debug_prefix        : 'debug request:',
+      debug_separator     : ' ',
+      headers             : {},
+      retry               : 0,
+      retryOnClientTimeout: undefined,
+      retryOnResponseError: undefined,
+      timeout             : 30e3,
+      url                 : '',
+      proxy               : process.env.HTTP_PROXY
     }, config)
 
     this.debug = new Debug(
@@ -88,7 +90,13 @@ module.exports = class
       timeout : this.config.timeout,
       url     : '',
       port    : this.config.port,
-      retry   : this.config.retry
+      retry   : this.config.retry,
+      retryOnClientTimeout : this.config.retryOnClientTimeout === undefined
+                           ? method === 'GET'
+                           : this.config.retryOnClientTimeout,
+      retryOnResponseError : this.config.retryOnResponseError === undefined
+                           ? method === 'GET'
+                           : this.config.retryOnResponseError
     }, options)
 
     const result = await this.resolveThroughRetryLoop(options)
@@ -112,9 +120,18 @@ module.exports = class
         const
           isClientError         = error.code === 'E_REQUEST_CLIENT_ERROR',
           isClientTimeoutError  = error.code === 'E_REQUEST_CLIENT_TIMEOUT',
+          isResponseClientError =
+          [
+            'E_REQUEST_RESPONSE_ERROR',
+            'E_REQUEST_RESPONSE_ABORTED',
+            'E_REQUEST_RESPONSE_INCOMPLETE'
+          ].includes(error.code),
           isInRetryLoopSpan     = ++i < options.retry
 
-        retry = isInRetryLoopSpan && (isClientError || (options.retryOnClientTimeout && isClientTimeoutError))
+        retry = isInRetryLoopSpan
+             && ( isClientError
+               || (options.retryOnClientTimeout && isClientTimeoutError)
+               || (options.retryOnResponseError && isResponseClientError))
 
         if(!retry)
         {

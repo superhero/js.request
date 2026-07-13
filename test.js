@@ -6,7 +6,7 @@ describe('request tests', async () =>
   http    = require('http'),
   Request = require('.')
 
-  let baseUrl, request, server
+  let baseUrl, delayResponseCount = 0, incompleteResponseCount = 0, request, server
 
   before((done) =>
   {
@@ -61,6 +61,15 @@ describe('request tests', async () =>
           const timeout = setTimeout(() => respond(200, {}), Number(delayMatch[1]) * 1e3)
           outgoing.on('close', () => clearTimeout(timeout))
         }
+        else if(parsed.pathname === '/delay-once' && delayResponseCount++ === 0)
+        {
+          const timeout = setTimeout(() => respond(200, {}), 100)
+          outgoing.on('close', () => clearTimeout(timeout))
+        }
+        else if(parsed.pathname === '/delay-once')
+        {
+          respond(200, { retried:true })
+        }
         else if(parsed.pathname === '/incomplete')
         {
           outgoing.writeHead(200,
@@ -70,6 +79,20 @@ describe('request tests', async () =>
           })
           outgoing.write('partial')
           setTimeout(() => outgoing.destroy(), 10)
+        }
+        else if(parsed.pathname === '/incomplete-once' && incompleteResponseCount++ === 0)
+        {
+          outgoing.writeHead(200,
+          {
+            'content-length' : 100,
+            'content-type'   : 'text/plain'
+          })
+          outgoing.write('partial')
+          setTimeout(() => outgoing.destroy(), 10)
+        }
+        else if(parsed.pathname === '/incomplete-once')
+        {
+          respond(200, { retried:true })
         }
         else
         {
@@ -263,6 +286,108 @@ describe('request tests', async () =>
         'E_REQUEST_RESPONSE_ABORTED',
         'E_REQUEST_RESPONSE_INCOMPLETE'
       ]).to.include(error.code)
+    }
+  })
+
+  it('retries a GET response error by default', async () =>
+  {
+    const response = await request.get(
+    {
+      url   : `${baseUrl}/incomplete-once`,
+      retry : 2
+    })
+
+    expect(response.status).to.be.equal(200)
+    expect(response.data.retried).to.be.equal(true)
+    expect(incompleteResponseCount).to.be.equal(2)
+  })
+
+  it('does not retry a POST response error by default', async () =>
+  {
+    incompleteResponseCount = 0
+
+    try
+    {
+      const response = await request.post(
+      {
+        url   : `${baseUrl}/incomplete-once`,
+        retry : 2
+      })
+      expect(response).to.be.equal('should never happen')
+    }
+    catch(error)
+    {
+      expect(incompleteResponseCount).to.be.equal(1)
+    }
+  })
+
+  it('supports explicit response retry overrides', async () =>
+  {
+    incompleteResponseCount = 0
+
+    const response = await request.post(
+    {
+      url                  : `${baseUrl}/incomplete-once`,
+      retry                : 2,
+      retryOnResponseError : true
+    })
+
+    expect(response.status).to.be.equal(200)
+    expect(incompleteResponseCount).to.be.equal(2)
+
+    incompleteResponseCount = 0
+
+    const noRetryRequest = new Request(
+    {
+      debug                : false,
+      proxy                : '',
+      retry                : 2,
+      retryOnResponseError : false
+    })
+
+    try
+    {
+      const noRetryResponse = await noRetryRequest.get(`${baseUrl}/incomplete-once`)
+      expect(noRetryResponse).to.be.equal('should never happen')
+    }
+    catch(error)
+    {
+      expect(incompleteResponseCount).to.be.equal(1)
+    }
+  })
+
+  it('retries a GET timeout by default', async () =>
+  {
+    const response = await request.get(
+    {
+      url     : `${baseUrl}/delay-once`,
+      retry   : 2,
+      timeout : 10
+    })
+
+    expect(response.status).to.be.equal(200)
+    expect(response.data.retried).to.be.equal(true)
+    expect(delayResponseCount).to.be.equal(2)
+  })
+
+  it('does not retry a POST timeout by default', async () =>
+  {
+    delayResponseCount = 0
+
+    try
+    {
+      const response = await request.post(
+      {
+        url     : `${baseUrl}/delay-once`,
+        retry   : 2,
+        timeout : 10
+      })
+      expect(response).to.be.equal('should never happen')
+    }
+    catch(error)
+    {
+      expect(error.code).to.be.equal('E_REQUEST_CLIENT_TIMEOUT')
+      expect(delayResponseCount).to.be.equal(1)
     }
   })
 })
