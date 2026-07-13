@@ -94,7 +94,7 @@ module.exports = class
           isInRetryLoopSpan     = ++i < options.retry
 
         retry = isInRetryLoopSpan && (isClientError || (options.retryOnClientTimeout && isClientTimeoutError))
-        
+
         if(!retry)
         {
           throw error
@@ -128,11 +128,11 @@ module.exports = class
         composedUrl = this.config.url + options.url
 
       let parsedUrl
-      try 
+      try
       {
         parsedUrl = url.parse(composedUrl, false, true)
-      } 
-      catch (error) 
+      }
+      catch (error)
       {
         const encodedUrl = encodeURI(composedUrl)
         parsedUrl = url.parse(encodedUrl, false, true)
@@ -156,7 +156,7 @@ module.exports = class
                       path  : parsedUrl.path,
                     }
 
-        
+
         config.rejectUnauthorized = options.rejectUnauthorized
         config.timeout            = options.timeout
         config.method             = method
@@ -225,6 +225,21 @@ module.exports = class
 
     let data = ''
 
+    const debugEvent = (event, error) => this.debug.log('response event:',
+    {
+      event,
+      error           : error && error.message,
+      readableEnded   : result.readableEnded,
+      readableAborted : result.readableAborted,
+      complete        : result.complete,
+      destroyed       : result.destroyed
+    })
+
+    result.on('error',   (error) => debugEvent('error', error))
+    result.on('aborted', ()      => debugEvent('aborted'))
+    result.on('end',     ()      => debugEvent('end'))
+    result.on('close',   ()      => debugEvent('close'))
+
     if(options.pipe || options.stream)
     {
       this.debug.log('piping the result')
@@ -240,6 +255,8 @@ module.exports = class
     }
     else if(result.readableEnded)
     {
+      debugEvent('already ended')
+
       fulfill(
       {
         url     : url,
@@ -250,6 +267,8 @@ module.exports = class
     }
     else
     {
+      debugEvent('chunk data collection started')
+
       result.on('data', (chunk) => data += chunk)
       result.on('end',  () =>
       {
@@ -257,15 +276,16 @@ module.exports = class
         {
           data = JSON.parse(data)
         }
-        catch (e) 
+        catch (e)
         {
           this.debug.log('tried and failed to parse content as json:', e.message)
         }
 
-        this.debug.log('options:', options)
-        this.debug.log('status:',  result.statusCode)
-        this.debug.log('headers:', result.headers)
-        this.debug.log('data:',    data)
+        this.debug.log(
+          'options:'   , options,
+          '\nstatus:'  , result.statusCode,
+          '\nheaders:' , result.headers,
+          '\ndata:'    , data)
 
         fulfill(
         {
