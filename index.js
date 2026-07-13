@@ -186,7 +186,7 @@ module.exports = class
         path    = `${method} ${parsedUrl.href}`,
         request = ( this.config.proxy || parsedUrl.protocol === 'http:'
                   ? require('http')
-                  : require('https')).request(config, this.onResult.bind(this, fulfill, options, composedUrl))
+                  : require('https')).request(config, this.onResult.bind(this, fulfill, reject, options, composedUrl))
 
       this.debug.log('parsed config:', config)
 
@@ -230,26 +230,56 @@ module.exports = class
     })
   }
 
-  onResult(fulfill, options, url, result)
+  onResult(fulfill, reject, options, url, result)
   {
     this.debug.log('response recieved')
 
     let data = ''
 
-    const debugEvent = (event, error) => this.debug.log('response event:',
-    {
-      event,
-      error           : error && error.message,
-      readableEnded   : result.readableEnded,
-      readableAborted : result.readableAborted,
-      complete        : result.complete,
-      destroyed       : result.destroyed
-    })
+    const
+      debugEvent = (event, error) => this.debug.log('response event:',
+      {
+        event,
+        error           : error && error.message,
+        readableEnded   : result.readableEnded,
+        readableAborted : result.readableAborted,
+        complete        : result.complete,
+        destroyed       : result.destroyed
+      }),
+      fail = (code, event, previous) =>
+      {
+        const
+          msg   = `response ${event} -> ${url}`,
+          error = new Error(msg)
 
-    result.on('error',   (error) => debugEvent('error', error))
-    result.on('aborted', ()      => debugEvent('aborted'))
-    result.on('end',     ()      => debugEvent('end'))
-    result.on('close',   ()      => debugEvent('close'))
+        this.debug.error(msg, options)
+
+        error.code     = code
+        error.previous = previous
+
+        reject(error)
+      }
+
+    result.once('error', (error) =>
+    {
+      debugEvent('error', error)
+      fail('E_REQUEST_RESPONSE_ERROR', 'error', error)
+    })
+    result.once('aborted', () =>
+    {
+      debugEvent('aborted')
+      fail('E_REQUEST_RESPONSE_ABORTED', 'aborted')
+    })
+    result.once('end', () => debugEvent('end'))
+    result.once('close', () =>
+    {
+      debugEvent('close')
+
+      if(!result.complete)
+      {
+        fail('E_REQUEST_RESPONSE_INCOMPLETE', 'closed before completion')
+      }
+    })
 
     if(options.pipe || options.stream)
     {
@@ -264,24 +294,12 @@ module.exports = class
         stream  : result
       })
     }
-    else if(result.readableEnded)
-    {
-      debugEvent('already ended')
-
-      fulfill(
-      {
-        url     : url,
-        status  : result.statusCode,
-        headers : result.headers,
-        data    : data
-      })
-    }
     else
     {
       debugEvent('chunk data collection started')
 
       result.on('data', (chunk) => data += chunk)
-      result.on('end',  () =>
+      result.once('end', () =>
       {
         try
         {

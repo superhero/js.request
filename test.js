@@ -61,6 +61,16 @@ describe('request tests', async () =>
           const timeout = setTimeout(() => respond(200, {}), Number(delayMatch[1]) * 1e3)
           outgoing.on('close', () => clearTimeout(timeout))
         }
+        else if(parsed.pathname === '/incomplete')
+        {
+          outgoing.writeHead(200,
+          {
+            'content-length' : 100,
+            'content-type'   : 'text/plain'
+          })
+          outgoing.write('partial')
+          setTimeout(() => outgoing.destroy(), 10)
+        }
         else
         {
           respond(404)
@@ -235,6 +245,24 @@ describe('request tests', async () =>
     catch(error)
     {
       expect(error.code).to.be.equal('E_REQUEST_CLIENT_TIMEOUT')
+    }
+  })
+
+  it('incomplete response test', async () =>
+  {
+    try
+    {
+      const response = await request.get(`${baseUrl}/incomplete`)
+      expect(response).to.be.equal('should never happen')
+    }
+    catch(error)
+    {
+      expect(
+      [
+        'E_REQUEST_RESPONSE_ERROR',
+        'E_REQUEST_RESPONSE_ABORTED',
+        'E_REQUEST_RESPONSE_INCOMPLETE'
+      ]).to.include(error.code)
     }
   })
 })
