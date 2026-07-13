@@ -1,8 +1,29 @@
 const
   Debug       = require('@superhero/debug'),
-  url         = require('url'),
   querystring = require('querystring'),
-  sleep       = (delay) => new Promise((go) => setTimeout(go, delay))
+  sleep       = (delay) => new Promise((go) => setTimeout(go, delay)),
+  parseUrl    = (value) =>
+  {
+    const absoluteValue = value.startsWith('//') ? `https:${value}` : value
+
+    try
+    {
+      return new URL(absoluteValue)
+    }
+    catch(error)
+    {
+      return new URL(encodeURI(absoluteValue))
+    }
+  },
+  parseAuth   = (value) =>
+  {
+    const match = value.match(/^(?:[a-z][a-z\d+.-]*:)?\/\/([^/?#]*)@/i)
+
+    return match ? decodeURIComponent(match[1]) : null
+  },
+  parseHostname = (parsed) => parsed.hostname.startsWith('[')
+                ? parsed.hostname.slice(1, -1)
+                : parsed.hostname
 
 module.exports = class
 {
@@ -127,33 +148,23 @@ module.exports = class
                         : querystring.stringify(options.data),
         composedUrl = this.config.url + options.url
 
-      let parsedUrl
-      try
-      {
-        parsedUrl = url.parse(composedUrl, false, true)
-      }
-      catch (error)
-      {
-        const encodedUrl = encodeURI(composedUrl)
-        parsedUrl = url.parse(encodedUrl, false, true)
-      }
-
       const
-        parsedProxy = url.parse(this.config.proxy || '', false, true),
+        parsedUrl   = parseUrl(composedUrl),
+        parsedProxy = this.config.proxy && parseUrl(this.config.proxy),
         config      = this.config.proxy
                     ?
                     {
-                      auth  : parsedProxy.auth,
-                      host  : parsedProxy.hostname,
+                      auth  : parseAuth(this.config.proxy),
+                      host  : parseHostname(parsedProxy),
                       path  : parsedUrl.href,
                       port  : parsedProxy.port,
                     }
                     :
                     {
-                      auth  : parsedUrl.auth,
-                      host  : parsedUrl.hostname,
+                      auth  : parseAuth(composedUrl),
+                      host  : parseHostname(parsedUrl),
                       port  : parsedUrl.port,
-                      path  : parsedUrl.path,
+                      path  : parsedUrl.pathname + parsedUrl.search,
                     }
 
 

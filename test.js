@@ -3,97 +3,199 @@ describe('request tests', async () =>
   const
   expect  = require('chai').expect,
   context = require('mochawesome/addContext'),
-  Request = require('.'),
-  request = new Request({ debug:false })
+  http    = require('http'),
+  Request = require('.')
 
-  after(() =>
+  let baseUrl, request, server
+
+  before((done) =>
+  {
+    server = http.createServer((incoming, outgoing) =>
+    {
+      const chunks = []
+
+      incoming.on('data', (chunk) => chunks.push(chunk))
+      incoming.on('end', () =>
+      {
+        const
+        parsed      = new URL(incoming.url, `http://${incoming.headers.host}`),
+        data        = Buffer.concat(chunks).toString(),
+        statusMatch = parsed.pathname.match(/^\/status\/(\d+)$/),
+        delayMatch  = parsed.pathname.match(/^\/delay\/(\d+)$/),
+        respond     = (status, body) =>
+        {
+          outgoing.statusCode = status
+
+          if(body === undefined)
+          {
+            outgoing.end()
+          }
+          else
+          {
+            outgoing.setHeader('content-type', 'application/json')
+            outgoing.end(JSON.stringify(body))
+          }
+        }
+
+        if(parsed.pathname === '/get')
+        {
+          respond(200,
+          {
+            args    : Object.fromEntries(parsed.searchParams),
+            headers :
+            {
+              authorization : incoming.headers.authorization
+            }
+          })
+        }
+        else if(['/post', '/put', '/delete'].includes(parsed.pathname))
+        {
+          respond(200, { data })
+        }
+        else if(statusMatch)
+        {
+          respond(Number(statusMatch[1]))
+        }
+        else if(delayMatch)
+        {
+          const timeout = setTimeout(() => respond(200, {}), Number(delayMatch[1]) * 1e3)
+          outgoing.on('close', () => clearTimeout(timeout))
+        }
+        else
+        {
+          respond(404)
+        }
+      })
+    })
+
+    server.listen(0, '127.0.0.1', () =>
+    {
+      baseUrl = `http://127.0.0.1:${server.address().port}`
+      request = new Request({ debug:false, proxy:'' })
+      done()
+    })
+  })
+
+  after((done) =>
   {
     console.log('\n')
     process.env.HTTP_PROXY
     ? console.log(`HTTP_PROXY env variable is set to: ${process.env.HTTP_PROXY}`)
     : console.log('HTTP_PROXY env variable is not set')
+
+    server.close(done)
   })
 
-  it('simple GET http request', async () =>
+  it('simple GET request', async () =>
   {
-    const response = await request.get('http://httpbin.org/get?foo=bar')
+    const response = await request.get(`${baseUrl}/get?foo=bar`)
     expect(response.status).to.be.equal(200)
     expect(response.data.args.foo).to.be.equal('bar')
   })
 
-  it('simple GET https request', async () =>
+  it('repeated simple GET request', async () =>
   {
-    const response = await request.get('https://httpbin.org/get?foo=bar')
+    const response = await request.get(`${baseUrl}/get?foo=bar`)
     expect(response.status).to.be.equal(200)
     expect(response.data.args.foo).to.be.equal('bar')
   })
 
-  it('simple POST http request', async () =>
+  it('simple POST request', async () =>
   {
     const
-    url       = 'http://httpbin.org/post',
+    url       = `${baseUrl}/post`,
     data      = { foo:'bar' },
     response  = await request.post({ url, data })
     expect(response.status).to.be.equal(200)
     expect(response.data.data).to.be.equal('foo=bar')
   })
 
-  it('simple POST https request', async () =>
+  it('repeated simple POST request', async () =>
   {
     const
-    url       = 'https://httpbin.org/post',
+    url       = `${baseUrl}/post`,
     data      = { foo:'bar' },
     response  = await request.post({ url, data })
     expect(response.status).to.be.equal(200)
     expect(response.data.data).to.be.equal('foo=bar')
   })
 
-  it('simple PUT http request', async () =>
+  it('simple PUT request', async () =>
   {
     const
-    url       = 'http://httpbin.org/put',
+    url       = `${baseUrl}/put`,
     data      = { foo:'bar' },
     response  = await request.put({ url, data })
     expect(response.status).to.be.equal(200)
     expect(response.data.data).to.be.equal('foo=bar')
   })
 
-  it('simple PUT https request', async () =>
+  it('repeated simple PUT request', async () =>
   {
     const
-    url       = 'https://httpbin.org/put',
+    url       = `${baseUrl}/put`,
     data      = { foo:'bar' },
     response  = await request.put({ url, data })
     expect(response.status).to.be.equal(200)
     expect(response.data.data).to.be.equal('foo=bar')
   })
 
-  it('simple DELETE http request', async () =>
+  it('simple DELETE request', async () =>
   {
     const
-    url       = 'http://httpbin.org/delete',
+    url       = `${baseUrl}/delete`,
     data      = { foo:'bar' },
     response  = await request.delete({ url, data })
     expect(response.status).to.be.equal(200)
     expect(response.data.data).to.be.equal('foo=bar')
   })
 
-  it('simple DELETE https request', async () =>
+  it('repeated simple DELETE request', async () =>
   {
     const
-    url       = 'https://httpbin.org/delete',
+    url       = `${baseUrl}/delete`,
     data      = { foo:'bar' },
     response  = await request.delete({ url, data })
     expect(response.status).to.be.equal(200)
     expect(response.data.data).to.be.equal('foo=bar')
   })
 
-  it('simple GET http request', async () =>
+  it('simple GET request with headers', async () =>
   {
     const
-    url       = 'http://httpbin.org/get?foo=bar',
+    url       = `${baseUrl}/get?foo=bar`,
     headers   = { 'content-type':'json/application' },
     response  = await request.get({ url, headers })
+
+    expect(response.status).to.be.equal(200)
+    expect(response.data.args.foo).to.be.equal('bar')
+  })
+
+  it('base URL request', async () =>
+  {
+    const
+    baseRequest = new Request({ debug:false, proxy:'', url:baseUrl }),
+    response    = await baseRequest.get('/get?foo=bar')
+
+    expect(response.status).to.be.equal(200)
+    expect(response.data.args.foo).to.be.equal('bar')
+  })
+
+  it('basic authentication request', async () =>
+  {
+    const
+    url      = baseUrl.replace('http://', 'http://user:@'),
+    response = await request.get(`${url}/get`)
+
+    expect(response.status).to.be.equal(200)
+    expect(response.data.headers.authorization).to.be.equal(`Basic ${Buffer.from('user:').toString('base64')}`)
+  })
+
+  it('proxy request', async () =>
+  {
+    const
+    proxyRequest = new Request({ debug:false, proxy:baseUrl }),
+    response     = await proxyRequest.get(`${baseUrl}/get?foo=bar`)
 
     expect(response.status).to.be.equal(200)
     expect(response.data.args.foo).to.be.equal('bar')
@@ -102,7 +204,7 @@ describe('request tests', async () =>
   it('204 status test', async () =>
   {
     const
-    url       = 'http://httpbin.org/status/204',
+    url       = `${baseUrl}/status/204`,
     headers   = { 'content-type':'json/application', accept:'json/application' },
     response  = await request.put({ url, headers, retry:3 })
 
@@ -112,7 +214,7 @@ describe('request tests', async () =>
   it('500 error test', async () =>
   {
     const
-    url       = 'http://httpbin.org/status/500',
+    url       = `${baseUrl}/status/500`,
     headers   = { 'content-type':'json/application' },
     response  = await request.get({ url, headers, retry:3 })
 
@@ -122,7 +224,7 @@ describe('request tests', async () =>
   it('408 error test', async () =>
   {
     const
-    url     = 'http://httpbin.org/delay/2',
+    url     = `${baseUrl}/delay/2`,
     headers = { 'content-type':'json/application' }
 
     try
